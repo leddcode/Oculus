@@ -159,9 +159,9 @@ class Domain:
         try:
             if self.search_type == 'environments':
                 self.__search_envs()
-            if self.search_type == 'directories':
+            elif self.search_type == 'directories':
                 self.__search_dirs()
-            if self.search_type == 'subdomains':
+            elif self.search_type == 'subdomains':
                 self.__search_subs()
         except Exception as e:
             print('Oops...', e)
