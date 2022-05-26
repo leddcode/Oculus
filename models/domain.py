@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+from distutils.command.sdist import sdist
 
 import requests
 
@@ -21,12 +22,13 @@ class Domain:
         self.default_env_list_path = 'wordlists/env_wordlist.txt'
         self.default_dir_list_path = 'wordlists/dir_wordlist.txt'
         self.default_sub_list_path = 'wordlists/sub_wordlist.txt'
-        self.name = ''
-        self.search_type = ''
+        self.name = None
+        self.search_type = None
         self.executor = '1337'
         self.parts = []
         self.futures = []
         self.permutations = []
+        self.cert_subdomains = []
         self.response_length_list = []
 
     def set_name(self, url):
@@ -91,25 +93,53 @@ class Domain:
                     self.__add_permutations(i, w, part, parts)
                     parts = self.parts[:]
 
-    def __make_request(self, url):
-        self.count_requests += 1
-        res = requests.get(url, timeout=self.timeout)
-        if res.status_code not in self.BAD_CODES:
-            status = strings.Helper.status(res.status_code)
-            length = len(res.text)
-            if length not in self.response_length_list:
-                self.response_length_list.append(length)
-                status = '' * 20
+    def __crtsh_search(self):
+        print(
+            strings.Helper.YELLOW,
+            f'<| Certificate Search',
+            strings.Helper.WHITE
+        )
+        url = f'https://crt.sh/?q=.{self.name}&output=json'
+        for cert in requests.get(url).json():
+            for sd in cert['name_value'].split('\n'):
+                if sd not in self.cert_subdomains and '*' not in sd:
+                    self.cert_subdomains.append(sd)
+                    print(
+                        strings.Helper.CYAN,
+                        f'<+  {sd}',
+                        strings.Helper.WHITE
+                    )
+
+        if not self.cert_subdomains:
             print(
-                strings.Helper.colour(res.status_code, status),
-                f' <+  {res.status_code}  {length:<12}  {url:<50}  {status}',
+                strings.Helper.CYAN,
+                '<-  No results',
                 strings.Helper.WHITE
             )
+
+    def __make_request(self, url):
+        self.count_requests += 1
+
+        try:
+            res = requests.get(url, timeout=self.timeout)
+            if res.status_code not in self.BAD_CODES:
+                status = strings.Helper.status(res.status_code)
+                length = len(res.text)
+                if length not in self.response_length_list:
+                    self.response_length_list.append(length)
+                    status = '' * 20
+                print(
+                    strings.Helper.colour(res.status_code, status),
+                    f'<+  {res.status_code}  {length:<12}  {url:<50}  {status}',
+                    strings.Helper.WHITE
+                )
+        except Exception:
+            '''Bad Request'''
 
         progress = round(self.count_requests / len(self.futures) * 40) * '█'
         print(
             strings.Helper.YELLOW,
-            f' <|  {progress:<40}  ::  {len(self.futures)} | {self.count_requests}',
+            f'<|  {progress:<40}  ::  {len(self.futures)} | {self.count_requests}',
             strings.Helper.WHITE,
             end='\r'
         )
@@ -131,13 +161,20 @@ class Domain:
                         self.__make_request, f'https://{self.name}/{w}'))
 
     def __create_sub_pool(self):
+        print(
+            strings.Helper.YELLOW,
+            f'\n <| Brute-Force',
+            strings.Helper.WHITE
+        )
         with open(self.default_sub_list_path, 'r') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
                 words = wl.read().splitlines()
                 for w in words:
-                    self.futures.append(self.executor.submit(
-                        self.__make_request, f'https://{w}.{self.name}'))
+                    sd = f'{w}.{self.name}'
+                    if sd not in self.cert_subdomains:
+                        self.futures.append(self.executor.submit(
+                            self.__make_request, f'https://{sd}'))
 
     def __search_envs(self):
         print(' <| Creating possible urls')
@@ -152,6 +189,7 @@ class Domain:
 
     def __search_subs(self):
         print(f' <| Searching for {self.search_type}\n')
+        self.__crtsh_search()
         self.__create_sub_pool()
 
     def search(self):
