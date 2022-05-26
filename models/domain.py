@@ -203,3 +203,5 @@ class Domain:
                 self.__search_subs()
         except Exception as e:
             print('Oops...', e)
+        finally:
+            print()
