@@ -4,6 +4,7 @@ search_types = '''
     1. Environments
     2. Directories
     3. Subdomains
+    4. Emails
     __________________
 '''
 
@@ -20,7 +21,7 @@ banner_speed = '''
                 / /_/ // /__ / /_/ /_  / / /_/ /_(__  )
                 \____/ \___/ \__,_/ /_/  \__,_/ /____/
 
-                v1.0.0
+                v1.0.2
                 By @enotr0n'''
 
 solid_line = '''

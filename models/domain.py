@@ -10,7 +10,8 @@ class Domain:
     OPTIONS = {
         '1': 'environments',
         '2': 'directories',
-        '3': 'subdomains'
+        '3': 'subdomains',
+        '4': 'emails'
     }
 
     BAD_CODES = (400, 404, 500, 501, 502, 503, 504)
@@ -117,6 +118,29 @@ class Domain:
                 strings.Helper.WHITE
             )
 
+    def __intelx_search(self):
+        print(
+            strings.Helper.YELLOW,
+            f'<| Searching for leaks',
+            strings.Helper.WHITE
+        )
+
+        url = f"https://trophyio.herokuapp.com/emails/{self.name}"
+        emails = requests.get(url).json()[self.name]
+        for email in emails:
+            print(
+                strings.Helper.GREEN,
+                f'<+  {email}',
+                strings.Helper.WHITE
+            )
+
+        if not emails:
+            print(
+                strings.Helper.CYAN,
+                '<-  No results',
+                strings.Helper.WHITE
+            )
+
     def __make_request(self, url):
         self.count_requests += 1
 
@@ -189,8 +213,12 @@ class Domain:
 
     def __search_subs(self):
         print(f' <| Searching for {self.search_type}\n')
-        self.__crtsh_search()
+        self.__intelx_search()
         self.__create_sub_pool()
+
+    def __search_emails(self):
+        print(f' <| Searching for {self.search_type}\n')
+        self.__intelx_search()
 
     def search(self):
         print(strings.solid_line)
@@ -201,6 +229,8 @@ class Domain:
                 self.__search_dirs()
             elif self.search_type == 'subdomains':
                 self.__search_subs()
+            elif self.search_type == 'emails':
+                self.__search_emails()
         except Exception as e:
             print('Oops...', e)
         finally:
