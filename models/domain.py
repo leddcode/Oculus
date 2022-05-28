@@ -213,7 +213,7 @@ class Domain:
 
     def __search_subs(self):
         print(f' <| Searching for {self.search_type}\n')
-        self.__intelx_search()
+        self.__crtsh_search()
         self.__create_sub_pool()
 
     def __search_emails(self):
