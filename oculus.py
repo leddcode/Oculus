@@ -1,4 +1,4 @@
-import sys
+import requests
 
 from models.domain import Domain
 from utils import strings
@@ -9,8 +9,15 @@ if __name__ == '__main__':
     print(strings.banner_speed)
     print(strings.solid_line)
 
-    try:
+    res = requests.get(
+        'https://raw.githubusercontent.com/enotr0n/Oculus/main/utils/strings.py')
 
+    if strings.banner_speed not in res.text:
+        print(strings.Helper.RED, '<| New version available!')
+        print(
+            f" <| Run {strings.Helper.PURPLE}'git pull' {strings.Helper.RED}command to update.{strings.Helper.WHITE}\n")
+
+    try:
         while not domain.name:
             url = input(' <: Domain name: ')
             if not domain.set_name(url):
