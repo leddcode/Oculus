@@ -25,12 +25,12 @@ if __name__ == '__main__':
 
         while not search_type:
             print(strings.search_types)
-            option = input('    Option   _')
+            option = input('    Run      >_')
             search_type = domain.set_search_option(option)
             if not search_type:
                 print(' <x The option does not exist.')
 
-        threads = input('    Threads  _')
+        threads = input('    Threads  >_')
         domain.set_threads(threads)
         domain.search()
 

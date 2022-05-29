@@ -1,11 +1,11 @@
 search_types = '''
- <: Choose search type
-    ------------------
-    1. Environments
-    2. Directories
-    3. Subdomains
-    4. Emails
-    __________________
+ <: Options
+    -----------------------------------------------
+    1. Environments Discovery
+    2. Directories Discovery
+    3. Subdomains Discovery
+    4. Mail Server DNS records and Emails Discovery
+    _______________________________________________
 '''
 
 banner_digital = '''
@@ -21,7 +21,7 @@ banner_speed = '''
                 / /_/ // /__ / /_/ /_  / / /_/ /_(__  )
                 \____/ \___/ \__,_/ /_/  \__,_/ /____/
 
-                v1.0.4
+                v1.0.5
                 By @enotr0n'''
 
 solid_line = '''

@@ -1,12 +1,12 @@
 from concurrent.futures import ThreadPoolExecutor
-from distutils.command.sdist import sdist
 
 import requests
 
+from models.mx import MX
 from utils import strings
 
 
-class Domain:
+class Domain(MX):
     OPTIONS = {
         '1': 'environments',
         '2': 'directories',
@@ -31,6 +31,7 @@ class Domain:
         self.permutations = []
         self.cert_subdomains = []
         self.response_length_list = []
+        super().__init__()
 
     def set_name(self, url):
         self.name = self.__check_url(url)
@@ -121,7 +122,7 @@ class Domain:
     def __intelx_search(self):
         print(
             strings.Helper.YELLOW,
-            f'<| Searching for leaks',
+            f'<| Leaked Emails',
             strings.Helper.WHITE
         )
 
@@ -135,7 +136,7 @@ class Domain:
         for email in emails:
             print(
                 strings.Helper.GREEN,
-                f'<+  {email}',
+                f'<+ {email}',
                 strings.Helper.WHITE
             )
 
@@ -222,7 +223,7 @@ class Domain:
         self.__create_sub_pool()
 
     def __search_emails(self):
-        print(f' <| Searching for {self.search_type}\n')
+        self.check_records()
         self.__intelx_search()
 
     def search(self):
