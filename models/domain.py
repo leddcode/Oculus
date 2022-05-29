@@ -125,8 +125,13 @@ class Domain:
             strings.Helper.WHITE
         )
 
+        '''   ⭐⭐⭐  '''
         url = f"https://trophyio.herokuapp.com/emails/{self.name}"
-        emails = requests.get(url).json()[self.name]
+        cookies = {
+            "Don't forget to star the Oculus project!":
+            "https://github.com/enotr0n/Oculus"
+        }
+        emails = requests.get(url, cookies=cookies).json()[self.name]
         for email in emails:
             print(
                 strings.Helper.GREEN,
