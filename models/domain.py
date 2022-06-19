@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+import random
 
 import requests
 
@@ -31,6 +32,7 @@ class Domain(MX):
         self.permutations = []
         self.cert_subdomains = []
         self.response_length_list = []
+        self.headers = self.__get_headers()
         super().__init__()
 
     def set_name(self, url):
@@ -56,6 +58,14 @@ class Domain(MX):
         except Exception:
             print(f'\n\n\n')
 
+    def __get_user_agent(self):
+        user_agents = open('utils/user_agents.txt').read().splitlines()
+        return random.choice(user_agents)
+
+    def __get_headers(self):
+        ua = self.__get_user_agent()
+        return {'User-Agent': ua}
+
     def __apply_threads(self, threads):
         try:
             threads = int(threads)
@@ -66,12 +76,28 @@ class Domain(MX):
 
     def __check_url(self, url):
         url = url.strip()
+        print('\n <- Checking host connection.')
         try:
-            res = requests.get(f'https://{url}', timeout=self.timeout)
+            res = requests.get(
+                f'https://{url}',
+                headers=self.headers,
+                timeout=self.timeout)
             if res.status_code not in (400, 404):
                 return url
+            else:
+                print(' <- Bad Domain?!')
         except Exception:
-            print(' <- Bad Domain!')
+            try:
+                res = requests.get(
+                    f'http://{url}',
+                    headers=self.headers,
+                    timeout=self.timeout)
+                if res.status_code not in (400, 404):
+                    return url
+                else:
+                    print(' <- Bad Domain?!')
+            except Exception:
+                print(' <- Bad Domain?!')
 
     def __set_parts(self):
         self.parts = self.name.split('.')
@@ -153,7 +179,10 @@ class Domain(MX):
         self.count_requests += 1
 
         try:
-            res = requests.get(url, timeout=self.timeout)
+            res = requests.get(
+                url,
+                headers=self.headers,
+                timeout=self.timeout)
             if res.status_code not in self.BAD_CODES:
                 status = strings.Helper.status(res.status_code)
                 length = len(res.text)
@@ -229,7 +258,6 @@ class Domain(MX):
         self.__intelx_search()
 
     def search(self):
-        print(strings.solid_line)
         try:
             if self.search_type == 'environments':
                 self.__search_envs()

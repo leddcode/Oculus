@@ -9,6 +9,8 @@ if __name__ == '__main__':
     print(strings.banner_speed)
     print(strings.solid_line)
 
+    print(' <| Checking the version...')
+
     res = requests.get(
         'https://raw.githubusercontent.com/enotr0n/Oculus/main/utils/strings.py')
 
@@ -16,6 +18,9 @@ if __name__ == '__main__':
         print(strings.Helper.RED, '<| New version available!')
         print(
             f" <| Run {strings.Helper.PURPLE}'git pull' {strings.Helper.RED}command to update.{strings.Helper.WHITE}\n")
+    else:
+        print(
+            f"{strings.Helper.GREEN} <| You are running the latest version.{strings.Helper.WHITE}\n")
 
     try:
         while not domain.name:
@@ -32,6 +37,9 @@ if __name__ == '__main__':
 
         threads = input('    Threads  >_')
         domain.set_threads(threads)
+
+        print(f'\n    Request Timeout  ::  {domain.timeout}')
+        print(f'    User-Agent       ::  {domain.headers["User-Agent"]}\n\n')
         domain.search()
 
     except KeyboardInterrupt:
