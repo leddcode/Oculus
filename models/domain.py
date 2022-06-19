@@ -25,6 +25,7 @@ class Domain(MX):
         self.default_dir_list_path = 'wordlists/dir_wordlist.txt'
         self.default_sub_list_path = 'wordlists/sub_wordlist.txt'
         self.name = None
+        self.protocol = None
         self.search_type = None
         self.executor = '1337'
         self.parts = []
@@ -76,13 +77,14 @@ class Domain(MX):
 
     def __check_url(self, url):
         url = url.strip()
-        print('\n <- Checking host connection.')
+        print('\n <| Checking host connection.')
         try:
             res = requests.get(
                 f'https://{url}',
                 headers=self.headers,
                 timeout=self.timeout)
             if res.status_code not in (400, 404):
+                self.protocol = 'https'
                 return url
             else:
                 print(' <- Bad Domain?!')
@@ -93,6 +95,7 @@ class Domain(MX):
                     headers=self.headers,
                     timeout=self.timeout)
                 if res.status_code not in (400, 404):
+                    self.protocol = 'http'
                     return url
                 else:
                     print(' <- Bad Domain?!')
@@ -107,9 +110,9 @@ class Domain(MX):
     def __add_permutations(self, i, word, part, parts):
         for char in ('-', '_', '.', ''):
             parts[i] = f'{word}{char}{part}'
-            self.permutations.append('https://' + '.'.join(parts))
+            self.permutations.append(f'{self.protocol}://' + '.'.join(parts))
             parts[i] = f'{part}{char}{word}'
-            self.permutations.append('https://' + '.'.join(parts))
+            self.permutations.append(f'{self.protocol}://' + '.'.join(parts))
 
     def __permutate_env_urls(self):
         with open(self.default_env_list_path, 'r') as wl:
@@ -219,7 +222,7 @@ class Domain(MX):
                 words = wl.read().splitlines()
                 for w in words:
                     self.futures.append(self.executor.submit(
-                        self.__make_request, f'https://{self.name}/{w}'))
+                        self.__make_request, f'{self.protocol}://{self.name}/{w}'))
 
     def __create_sub_pool(self):
         print(
@@ -235,7 +238,7 @@ class Domain(MX):
                     sd = f'{w}.{self.name}'
                     if sd not in self.cert_subdomains:
                         self.futures.append(self.executor.submit(
-                            self.__make_request, f'https://{sd}'))
+                            self.__make_request, f'{self.protocol}://{sd}'))
 
     def __search_envs(self):
         print(' <| Creating possible urls')

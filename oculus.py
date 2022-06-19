@@ -39,6 +39,7 @@ if __name__ == '__main__':
         domain.set_threads(threads)
 
         print(f'\n    Request Timeout  ::  {domain.timeout}')
+        print(f'    Protocol         ::  {domain.protocol}')
         print(f'    User-Agent       ::  {domain.headers["User-Agent"]}\n\n')
         domain.search()
 
