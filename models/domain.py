@@ -1,29 +1,22 @@
-from concurrent.futures import ThreadPoolExecutor
 import random
 
 import requests
 
-from models.mx import MX
-from utils import strings
+from models.mixins.colour import Colour
+from models.mixins.config import Config
+from models.mixins.dir import Dir
+from models.mixins.emails import Email
+from models.mixins.env import Env
+from models.mixins.mx import Mx
+from models.mixins.request import Request
+from models.mixins.sub import Sub
 
 
-class Domain(MX):
-    OPTIONS = {
-        '1': 'environments',
-        '2': 'directories',
-        '3': 'subdomains',
-        '4': 'emails'
-    }
-
-    BAD_CODES = (400, 404, 500, 501, 502, 503, 504)
+class Domain(Colour, Config, Dir, Email, Env, Mx, Request, Sub):
 
     def __init__(self):
         self.threads = 15
-        self.timeout = 4
         self.count_requests = 0
-        self.default_env_list_path = 'wordlists/env_wordlist.txt'
-        self.default_dir_list_path = 'wordlists/dir_wordlist.txt'
-        self.default_sub_list_path = 'wordlists/sub_wordlist.txt'
         self.name = None
         self.protocol = None
         self.search_type = None
@@ -59,6 +52,11 @@ class Domain(MX):
         except Exception:
             print(f'\n\n\n')
 
+    def __set_parts(self):
+        self.parts = self.name.split('.')
+        if len(self.parts) > 1:
+            return True
+
     def __get_user_agent(self):
         user_agents = open('utils/user_agents.txt').read().splitlines()
         return random.choice(user_agents)
@@ -75,201 +73,52 @@ class Domain(MX):
         except Exception:
             print('\n <- Bad input. Continue with default value.')
 
+    def __connect_via_HTTP(self, url):
+        try:
+            res = requests.get(
+                f'http://{url}',
+                headers=self.headers,
+                timeout=self.TIMEOUT)
+            if res.status_code not in (400, 404):
+                self.protocol = 'http'
+                print(
+                    f' ==> {self.GREEN}HTTP{self.WHITE}')
+                return url
+            else:
+                ''' <- Bad Domain?!'''
+        except Exception:
+            print(f' ==> {self.RED}HTTP{self.WHITE}')
+            ''' <- Bad Domain?!'''
+
     def __check_url(self, url):
         url = url.strip()
-        print('\n <| Checking host connection.')
+        print(' <| Checking host connection', end='')
         try:
             res = requests.get(
                 f'https://{url}',
                 headers=self.headers,
-                timeout=self.timeout)
+                timeout=self.TIMEOUT)
             if res.status_code not in (400, 404):
                 self.protocol = 'https'
+                print(
+                    f' ==> {self.GREEN}HTTPS{self.WHITE}')
                 return url
             else:
                 print(' <- Bad Domain?!')
         except Exception:
-            try:
-                res = requests.get(
-                    f'http://{url}',
-                    headers=self.headers,
-                    timeout=self.timeout)
-                if res.status_code not in (400, 404):
-                    self.protocol = 'http'
-                    return url
-                else:
-                    print(' <- Bad Domain?!')
-            except Exception:
-                print(' <- Bad Domain?!')
-
-    def __set_parts(self):
-        self.parts = self.name.split('.')
-        if len(self.parts) > 1:
-            return True
-
-    def __add_permutations(self, i, word, part, parts):
-        for char in ('-', '_', '.', ''):
-            parts[i] = f'{word}{char}{part}'
-            self.permutations.append(f'{self.protocol}://' + '.'.join(parts))
-            parts[i] = f'{part}{char}{word}'
-            self.permutations.append(f'{self.protocol}://' + '.'.join(parts))
-
-    def __permutate_env_urls(self):
-        with open(self.default_env_list_path, 'r') as wl:
-            words = wl.read()
-            for w in words.splitlines():
-                parts = self.parts[:]
-                for i in range(len(self.parts) - 1):
-                    part = parts[i]
-                    self.__add_permutations(i, w, part, parts)
-                    parts = self.parts[:]
-
-    def __crtsh_search(self):
-        print(
-            strings.Helper.YELLOW,
-            f'<| Certificate Search',
-            strings.Helper.WHITE
-        )
-        url = f'https://crt.sh/?q=.{self.name}&output=json'
-        for cert in requests.get(url).json():
-            for sd in cert['name_value'].split('\n'):
-                if sd not in self.cert_subdomains and '*' not in sd:
-                    self.cert_subdomains.append(sd)
-                    print(
-                        strings.Helper.CYAN,
-                        f'<+  {sd}',
-                        strings.Helper.WHITE
-                    )
-
-        if not self.cert_subdomains:
-            print(
-                strings.Helper.CYAN,
-                '<-  No results',
-                strings.Helper.WHITE
-            )
-
-    def __intelx_search(self):
-        print(
-            strings.Helper.YELLOW,
-            f'<| Leaked Emails',
-            strings.Helper.WHITE
-        )
-
-        '''   ⭐⭐⭐  '''
-        url = f"https://trophyio.herokuapp.com"
-        cookies = {
-            "Don't forget to star the Oculus project!":
-            "https://github.com/enotr0n/Oculus"
-        }
-        requests.get(f'{url}/console/oculus?emails')
-        emails = requests.get(
-            f'{url}/emails/{self.name}', cookies=cookies).json()[self.name]
-        for email in emails:
-            print(
-                strings.Helper.GREEN,
-                f'<+ {email}',
-                strings.Helper.WHITE
-            )
-
-        if not emails:
-            print(
-                strings.Helper.CYAN,
-                '<-  No results',
-                strings.Helper.WHITE
-            )
-
-    def __make_request(self, url):
-        self.count_requests += 1
-
-        try:
-            res = requests.get(
-                url,
-                headers=self.headers,
-                timeout=self.timeout)
-            if res.status_code not in self.BAD_CODES:
-                status = strings.Helper.status(res.status_code)
-                length = len(res.text)
-                if length not in self.response_length_list:
-                    self.response_length_list.append(length)
-                    status = '' * 20
-                print(
-                    strings.Helper.colour(res.status_code, status),
-                    f'<+  {res.status_code}  {length:<12}  {url:<50}  {status}',
-                    strings.Helper.WHITE
-                )
-        except Exception:
-            '''Bad Request'''
-
-        progress = round(self.count_requests / len(self.futures) * 40) * '█'
-        print(
-            strings.Helper.YELLOW,
-            f'<|  {progress:<40}  ::  {len(self.futures)} | {self.count_requests}',
-            strings.Helper.WHITE,
-            end='\r'
-        )
-
-    def __create_env_pool(self,):
-        with ThreadPoolExecutor(max_workers=self.threads) as executor:
-            self.executor = executor
-            for url in self.permutations:
-                self.futures.append(
-                    self.executor.submit(self.__make_request, url))
-
-    def __create_dir_pool(self):
-        with open(self.default_dir_list_path, 'r') as wl:
-            with ThreadPoolExecutor(max_workers=self.threads) as executor:
-                self.executor = executor
-                words = wl.read().splitlines()
-                for w in words:
-                    self.futures.append(self.executor.submit(
-                        self.__make_request, f'{self.protocol}://{self.name}/{w}'))
-
-    def __create_sub_pool(self):
-        print(
-            strings.Helper.YELLOW,
-            f'\n <| Brute-Force',
-            strings.Helper.WHITE
-        )
-        with open(self.default_sub_list_path, 'r') as wl:
-            with ThreadPoolExecutor(max_workers=self.threads) as executor:
-                self.executor = executor
-                words = wl.read().splitlines()
-                for w in words:
-                    sd = f'{w}.{self.name}'
-                    if sd not in self.cert_subdomains:
-                        self.futures.append(self.executor.submit(
-                            self.__make_request, f'{self.protocol}://{sd}'))
-
-    def __search_envs(self):
-        print(' <| Creating possible urls')
-        self.__permutate_env_urls()
-
-        print(f' <| Searching for {self.search_type}\n')
-        self.__create_env_pool()
-
-    def __search_dirs(self):
-        print(f' <| Searching for {self.search_type}\n')
-        self.__create_dir_pool()
-
-    def __search_subs(self):
-        print(f' <| Searching for {self.search_type}\n')
-        self.__crtsh_search()
-        self.__create_sub_pool()
-
-    def __search_emails(self):
-        self.check_records()
-        self.__intelx_search()
+            print(f' ==> {self.RED} HTTPS', end='')
+            return self.__connect_via_HTTP(url)
 
     def search(self):
         try:
             if self.search_type == 'environments':
-                self.__search_envs()
+                self._search_envs()
             elif self.search_type == 'directories':
-                self.__search_dirs()
+                self._search_dirs()
             elif self.search_type == 'subdomains':
-                self.__search_subs()
+                self._search_subs()
             elif self.search_type == 'emails':
-                self.__search_emails()
+                self._search_emails()
         except Exception as e:
             print('Oops...', e)
         finally:

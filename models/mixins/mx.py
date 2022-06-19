@@ -1,21 +1,19 @@
 from dns.resolver import resolve
 
-from utils import strings
 
-
-class MX:
+class Mx:
 
     def __get_mx_data(self):
         try:
             records = resolve(self.name, 'MX')
             for rdata in records:
                 print(
-                    strings.Helper.GREEN,
+                    self.GREEN,
                     f'<+ {rdata}'
                 )
         except Exception:
             print(
-                strings.Helper.RED,
+                self.RED,
                 f'<- No MX Records Found'
             )
 
@@ -26,17 +24,17 @@ class MX:
             for rec in dmarc_record:
                 if 'v=DMARC1' in str(rec):
                     print(
-                        strings.Helper.GREEN,
+                        self.GREEN,
                         f'<+ DMARC Record: {rec}'
                     )
                 if 'p=none' in str(rec):
                     print(
-                        strings.Helper.RED,
+                        self.RED,
                         '<- DMARC Quarantine/Reject policy not enabled'
                     )
         except Exception:
             print(
-                strings.Helper.RED,
+                self.RED,
                 "<- DMARC Record not published"
             )
 
@@ -48,7 +46,7 @@ class MX:
                     return str(rec)
         except Exception:
             print(
-                strings.Helper.PURPLE,
+                self.PURPLE,
                 "<x The domain has no Mail Server ??"
             )
 
@@ -56,20 +54,20 @@ class MX:
         rec = self.__get_spf_record()
         if rec:
             print(
-                strings.Helper.GREEN,
+                self.GREEN,
                 f'<+ SPF Record: {rec}\n'
             )
         else:
             print(
-                strings.Helper.RED,
+                self.RED,
                 "<- SPF Record not published\n"
             )
 
     def check_records(self):
         print(
-            strings.Helper.YELLOW,
+            self.YELLOW,
             '<| Mail Server Records',
-            strings.Helper.WHITE
+            self.WHITE
         )
         self.__get_mx_data()
         self.__get_dmarc_record()
