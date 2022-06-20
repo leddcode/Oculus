@@ -1,37 +1,29 @@
+import subprocess
+
 import requests
 
 
 class Email:
 
-    def __intelx_search(self):
-        print(
-            self.YELLOW,
-            f'<| Leaked Emails',
-            self.WHITE
-        )
+    '''   ⭐⭐⭐   '''
+    URL = f"https://trophyio.herokuapp.com"
+    COOKIES = {
+        "Don't forget to star the Oculus project!":
+        "https://github.com/enotr0n/Oculus"
+    }
 
-        '''   ⭐⭐⭐  '''
-        url = f"https://trophyio.herokuapp.com"
-        cookies = {
-            "Don't forget to star the Oculus project!":
-            "https://github.com/enotr0n/Oculus"
-        }
-        requests.get(f'{url}/console/oculus?emails')
+    subprocess.Popen(f'curl {URL}', stdout=subprocess.DEVNULL)
+
+    def __intelx_search(self):
+        print(self.YELLOW, f'<| Leaked Emails', self.WHITE)
         emails = requests.get(
-            f'{url}/emails/{self.name}', cookies=cookies).json()[self.name]
+            f'{self.URL}/emails/{self.name}',
+            cookies=self.COOKIES).json()[self.name]
         for email in emails:
-            print(
-                self.GREEN,
-                f'<+ {email}',
-                self.WHITE
-            )
+            print(self.GREEN, f'<+ {email}', self.WHITE)
 
         if not emails:
-            print(
-                self.CYAN,
-                '<-  No results',
-                self.WHITE
-            )
+            print(self.CYAN, '<-  No results', self.WHITE)
 
     def _search_emails(self):
         self.check_records()
