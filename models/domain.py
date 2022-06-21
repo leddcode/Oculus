@@ -106,7 +106,7 @@ class Domain(Colour, Config, Dir, Email, Env, Mx, Request, Sub):
             else:
                 print(' <- Bad Domain?!')
         except Exception:
-            print(f' ==> {self.RED} HTTPS', end='')
+            print(f' ==> {self.RED} HTTPS{self.WHITE}', end='')
             return self.__connect_via_HTTP(url)
 
     def search(self):
