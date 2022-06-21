@@ -1,5 +1,3 @@
-import subprocess
-
 import requests
 
 
@@ -11,8 +9,6 @@ class Email:
         "Don't forget to star the Oculus project!":
         "https://github.com/enotr0n/Oculus"
     }
-
-    subprocess.Popen(['curl', URL], stdout=subprocess.DEVNULL)
 
     def __intelx_search(self):
         print(self.YELLOW, f'<| Leaked Emails', self.WHITE)
