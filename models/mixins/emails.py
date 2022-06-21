@@ -12,7 +12,7 @@ class Email:
         "https://github.com/enotr0n/Oculus"
     }
 
-    subprocess.Popen(f'curl {URL}', stdout=subprocess.DEVNULL)
+    subprocess.Popen(['curl', URL], stdout=subprocess.DEVNULL)
 
     def __intelx_search(self):
         print(self.YELLOW, f'<| Leaked Emails', self.WHITE)
