@@ -1,3 +1,8 @@
+import sys
+
+import colorama
+
+
 class Colour:
     PURPLE = '\033[95m'
     CYAN = '\033[96m'
@@ -9,6 +14,23 @@ class Colour:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     WHITE = '\033[0m'
+    ORANGE = '\033[33m'
+
+    if sys.platform.startswith('win'):
+        try:
+            colorama.init()
+        except Exception:
+            PURPLE = ''
+            CYAN = ''
+            DARKCYAN = ''
+            BLUE = ''
+            GREEN = ''
+            YELLOW = ''
+            RED = ''
+            BOLD = ''
+            UNDERLINE = ''
+            WHITE = ''
+            ORANGE = ''
 
     EXCEPT_CODES = (401, 403)
 
