@@ -1,19 +1,33 @@
 from threading import Lock
+from urllib3.exceptions import InsecureRequestWarning
 
 import requests
+from requests.exceptions import SSLError
 
 
 class Request:
     LOCK = Lock()
 
+    def _request(self, url):
+        requests.packages.urllib3.disable_warnings(
+            category=InsecureRequestWarning)
+        try:
+            return requests.get(
+                url,
+                headers=self.headers,
+                timeout=self.TIMEOUT)
+        except SSLError:
+            return requests.get(
+                url,
+                headers=self.headers,
+                timeout=self.TIMEOUT,
+                verify=False)
+
     def _make_request(self, url):
         self.count_requests += 1
 
         try:
-            res = requests.get(
-                url,
-                headers=self.headers,
-                timeout=self.TIMEOUT)
+            res = self._request(url)
             if res.status_code not in self.BAD_CODES:
                 status = self.colour_status(res.status_code)
                 length = len(res.text)

@@ -1,7 +1,5 @@
 import random
 
-import requests
-
 from models.mixins.colour import Colour
 from models.mixins.config import Config
 from models.mixins.dir import Dir
@@ -75,10 +73,7 @@ class Domain(Colour, Config, Dir, Email, Env, Mx, Request, Sub):
 
     def __connect_via_HTTP(self, url):
         try:
-            res = requests.get(
-                f'http://{url}',
-                headers=self.headers,
-                timeout=self.TIMEOUT)
+            res = self._request(f'http://{url}')
             if res.status_code not in (400, 404):
                 self.protocol = 'http'
                 print(
@@ -94,10 +89,7 @@ class Domain(Colour, Config, Dir, Email, Env, Mx, Request, Sub):
         url = url.strip()
         print(' <| Checking host connection', end='')
         try:
-            res = requests.get(
-                f'https://{url}',
-                headers=self.headers,
-                timeout=self.TIMEOUT)
+            res = self._request(f'https://{url}')
             if res.status_code not in (400, 404):
                 self.protocol = 'https'
                 print(
