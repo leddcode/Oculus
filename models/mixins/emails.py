@@ -16,6 +16,7 @@ class Email:
             f'{self.URL}/emails/{self.name}',
             cookies=self.COOKIES).json()[self.name]
         for email in emails:
+            self._write(email, 'emails')
             print(self.GREEN, f'<+ {email}', self.WHITE)
 
         if not emails:

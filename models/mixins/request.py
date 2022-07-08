@@ -34,6 +34,7 @@ class Request:
                 if length not in self.response_length_list:
                     self.response_length_list.append(length)
                     status = '' * 20
+                self._write(url, f'{res.status_code}{status}')
                 self.LOCK.acquire()
                 print(
                     self.colour_code(res.status_code, status),

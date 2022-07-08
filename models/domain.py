@@ -8,9 +8,10 @@ from models.mixins.env import Env
 from models.mixins.mx import Mx
 from models.mixins.request import Request
 from models.mixins.sub import Sub
+from models.mixins.writer import Writer
 
 
-class Domain(Colour, Config, Dir, Email, Env, Mx, Request, Sub):
+class Domain(Colour, Config, Dir, Email, Env, Mx, Request, Sub, Writer):
 
     def __init__(self):
         self.threads = 15

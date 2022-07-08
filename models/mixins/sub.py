@@ -17,6 +17,7 @@ class Sub:
             for sd in cert['name_value'].split('\n'):
                 if sd not in self.cert_subdomains and '*' not in sd:
                     self.cert_subdomains.append(sd)
+                    self._write(sd, 'certificate_search')
                     print(
                         self.CYAN,
                         f'<+  {sd}',
