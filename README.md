@@ -5,7 +5,15 @@ Additionally, it is useful for searching leaked email addresses and MX records o
 
 ![Build](https://img.shields.io/badge/Built%20with-Python-Blue)
 
-![](intro.png)
+```sh
+ _______             ______
+ __  __ \_________  ____  /___  _________
+ _  / / /  ___/  / / /_  /_  / / /_  ___/
+ / /_/ // /__ / /_/ /_  / / /_/ /_(__  )
+ \____/ \___/ \__,_/ /_/  \__,_/ /____/
+
+ By @leddcode
+```
 
 ## Installation
 
