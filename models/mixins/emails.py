@@ -7,7 +7,7 @@ class Email:
     URL = f"https://trophyio.herokuapp.com"
     COOKIES = {
         "Don't forget to star the Oculus project!":
-        "https://github.com/enotr0n/Oculus"
+        "https://github.com/leddcode/Oculus"
     }
 
     def __intelx_search(self):
