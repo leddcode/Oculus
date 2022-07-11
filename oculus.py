@@ -2,7 +2,7 @@
 """
 Be easy and interactive ;)
 
-@author: enotr0n
+@author: leddcode
 """
 
 import requests
@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     try:
         res = requests.get(
-            'https://raw.githubusercontent.com/enotr0n/Oculus/main/utils/strings.py')
+            'https://raw.githubusercontent.com/leddcode/Oculus/main/utils/strings.py')
 
         if strings.banner_speed not in res.text:
             print(Domain.RED, '<| New version available!')
