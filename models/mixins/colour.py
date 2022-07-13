@@ -35,11 +35,11 @@ class Colour:
     EXCEPT_CODES = (401, 403)
 
     def colour_code(self, code, status):
-        if code == 200 and not status:
-            return Colour.GREEN
+        if status == 'Possible false positive!':
+            return Colour.RED
         elif code in Colour.EXCEPT_CODES:
             return Colour.DARKCYAN
-        return Colour.RED
+        return Colour.GREEN
 
     def colour_status(self, code):
         if code not in Colour.EXCEPT_CODES:
