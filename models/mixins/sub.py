@@ -8,7 +8,7 @@ class Sub:
     def __crtsh_search(self):
         print(
             self.YELLOW,
-            f'<| Certificate Search',
+            f'<| Certificate Search\n',
             self.WHITE
         )
 
@@ -34,7 +34,7 @@ class Sub:
     def __create_sub_pool(self):
         print(
             self.YELLOW,
-            f'\n <| Brute-Force',
+            f'\n <| Brute-Force\n',
             self.WHITE
         )
         with open(self.SUB_LIST, 'r') as wl:
