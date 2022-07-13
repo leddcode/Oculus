@@ -5,7 +5,7 @@ search_types = '''
     2. Directories Discovery
     3. Subdomains Discovery
     4. Mail Server DNS records and Emails Discovery
-    5. S3 Buckets
+    5. S3 Buckets Discovery
     _______________________________________________
 '''
 
