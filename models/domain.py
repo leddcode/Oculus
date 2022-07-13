@@ -1,5 +1,6 @@
 import random
 
+from models.mixins.bucket import Bucket
 from models.mixins.colour import Colour
 from models.mixins.config import Config
 from models.mixins.dir import Dir
@@ -11,7 +12,18 @@ from models.mixins.sub import Sub
 from models.mixins.writer import Writer
 
 
-class Domain(Colour, Config, Dir, Email, Env, Mx, Request, Sub, Writer):
+class Domain(
+    Bucket,
+    Colour,
+    Config,
+    Dir,
+    Email,
+    Env,
+    Mx,
+    Request,
+    Sub,
+    Writer
+):
 
     def __init__(self):
         self.threads = 15
@@ -112,6 +124,8 @@ class Domain(Colour, Config, Dir, Email, Env, Mx, Request, Sub, Writer):
                 self._search_subs()
             elif self.search_type == 'emails':
                 self._search_emails()
+            elif self.search_type == 'S3 Buckets':
+                self._search_s3_buckets()
         except Exception as e:
             print('Oops...', e)
         finally:

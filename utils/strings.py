@@ -5,6 +5,7 @@ search_types = '''
     2. Directories Discovery
     3. Subdomains Discovery
     4. Mail Server DNS records and Emails Discovery
+    5. S3 Buckets
     _______________________________________________
 '''
 
@@ -21,7 +22,7 @@ banner_speed = '''
                 / /_/ // /__ / /_/ /_  / / /_/ /_(__  )
                 \____/ \___/ \__,_/ /_/  \__,_/ /____/
 
-                v1.0.14
+                v1.1.0
                 By @leddcode'''
 
 solid_line = '''

@@ -34,6 +34,9 @@ class Request:
                 if length not in self.response_length_list:
                     self.response_length_list.append(length)
                     status = '' * 20
+                if (self.search_type == 'S3 Bucket'
+                        and 'x-amz-bucket-region' in res.headers):
+                    status = res.headers['x-amz-bucket-region']
                 self._write(url, f'{res.status_code}{status}')
                 self.LOCK.acquire()
                 print(
