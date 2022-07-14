@@ -1,11 +1,11 @@
 search_types = '''
- <: Options
+ <: Enumeration Options
     -----------------------------------------------
     1. Environments Discovery
     2. Directories Discovery
     3. Subdomains Discovery
     4. Mail Server DNS records and Emails Discovery
-    5. S3 Buckets Discovery
+    5. S3 Buckets
     6. Azure Blob Containers
     _______________________________________________
 '''
@@ -23,7 +23,7 @@ banner_speed = '''
                 / /_/ // /__ / /_/ /_  / / /_/ /_(__  )
                 \____/ \___/ \__,_/ /_/  \__,_/ /____/
 
-                v1.1.3
+                v1.1.4
                 By @leddcode'''
 
 solid_line = '''

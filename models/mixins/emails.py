@@ -4,14 +4,14 @@ import requests
 class Email:
 
     '''   ⭐⭐⭐   '''
-    URL = f"https://trophyio.herokuapp.com"
+    URL = "https://trophyio.herokuapp.com"
     COOKIES = {
         "Don't forget to star the Oculus project!":
         "https://github.com/leddcode/Oculus"
     }
 
     def __intelx_search(self):
-        print(self.YELLOW, f'<| Leaked Emails', self.WHITE)
+        print(self.YELLOW, '<| Leaked Emails', self.WHITE)
         emails = requests.get(
             f'{self.URL}/emails/{self.name}',
             cookies=self.COOKIES).json()[self.name]

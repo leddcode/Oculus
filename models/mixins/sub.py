@@ -8,7 +8,7 @@ class Sub:
     def __crtsh_search(self):
         print(
             self.YELLOW,
-            f'<| Certificate Search\n',
+            '<| Certificate Search\n',
             self.WHITE
         )
 
@@ -34,14 +34,13 @@ class Sub:
     def __create_sub_pool(self):
         print(
             self.YELLOW,
-            f'\n <| Brute-Force\n',
+            '\n <| Brute-Force\n',
             self.WHITE
         )
         with open(self.SUB_LIST, 'r') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
-                words = wl.read().splitlines()
-                for w in words:
+                for w in wl.read().splitlines():
                     sd = f'{w}.{self.name}'
                     if sd not in self.cert_subdomains:
                         self.futures.append(self.executor.submit(

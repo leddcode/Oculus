@@ -7,8 +7,7 @@ class Dir:
         with open(self.DIR_LIST, 'r') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
-                words = wl.read().splitlines()
-                for w in words:
+                for w in wl.read().splitlines():
                     self.futures.append(self.executor.submit(
                         self._make_request, f'{self.protocol}://{self.name}/{w}'))
 

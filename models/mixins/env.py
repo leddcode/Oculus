@@ -12,8 +12,7 @@ class Env:
 
     def __permutate_env_urls(self):
         with open(self.ENV_LIST, 'r') as wl:
-            words = wl.read().splitlines()
-            for w in words:
+            for w in wl.read().splitlines():
                 parts = self.parts[:]
                 for i in range(len(self.parts) - 1):
                     part = parts[i]
@@ -21,6 +20,9 @@ class Env:
                     parts = self.parts[:]
 
     def __create_env_pool(self):
+        print(' <| Creating possible urls')
+        self.__permutate_env_urls()
+        print(f' <| Searching for {self.search_type}\n')
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             for url in self.permutations:
@@ -28,8 +30,4 @@ class Env:
                     self.executor.submit(self._make_request, url))
 
     def _search_envs(self):
-        print(' <| Creating possible urls')
-        self.__permutate_env_urls()
-
-        print(f' <| Searching for {self.search_type}\n')
         self.__create_env_pool()
