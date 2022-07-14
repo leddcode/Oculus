@@ -222,6 +222,7 @@ pdf-bucket
 photos
 pics
 presentations
+prd
 prod
 production
 production3
