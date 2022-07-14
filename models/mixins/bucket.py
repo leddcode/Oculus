@@ -16,12 +16,10 @@ class Bucket:
 
     def __add_s3_permutations(self, word, keyword):
         for char in ('-', '_', '.', ''):
-            query = f'{word}{char}{keyword}'
             self.permutations.append(
-                f'https://{query}.s3.amazonaws.com/')
-            query = f'{keyword}{char}{word}'
+                f'https://{word}{char}{keyword}.s3.amazonaws.com/')
             self.permutations.append(
-                f'https://{query}.s3.amazonaws.com/')
+                f'https://{keyword}{char}{word}.s3.amazonaws.com/')
 
     def __permutate_s3_urls(self):
         self.permutations = []
@@ -39,14 +37,15 @@ class Bucket:
                    
     '''Azure Blobs'''
 
-    def __add_azure_blobs_permutations(self, word, keyword):
+    def __add_azure_blobs_permutations(self, word, keyword, all_words):
         for char in ('-', '_', '.', ''):
-            query = f'{word}{char}{keyword}'
-            self.permutations.append(
-                f'https://{query}.blob.core.windows.net/{word}/?restype=container&comp=list')
-            query = f'{keyword}{char}{word}'
-            self.permutations.append(
-                f'https://{query}.blob.core.windows.net/{word}/?restype=container&comp=list')
+            query_1 = f'{word}{char}{keyword}'
+            query_2 = f'{keyword}{char}{word}'
+            for w in all_words:
+                self.permutations.append(
+                    f'https://{query_1}.blob.core.windows.net/{w}/?restype=container&comp=list')
+                self.permutations.append(
+                    f'https://{query_2}.blob.core.windows.net/{w}/?restype=container&comp=list')
 
     def __permutate_azure_blobs_urls(self):
         self.permutations = []
@@ -56,7 +55,7 @@ class Bucket:
                 for w in words:
                     self.permutations.append(
                         f'https://{keyword}.blob.core.windows.net/{w}/?restype=container&comp=list')
-                    self.__add_azure_blobs_permutations(w, keyword)
+                    self.__add_azure_blobs_permutations(w, keyword, words)
 
     '''Cloud - General'''
     
@@ -67,14 +66,14 @@ class Bucket:
             self.__permutate_azure_blobs_urls()
 
     def __create_cloud_pool(self):
+        print(f' <| Building permutations\n')
+        self.__permutate_cloud_urls()
+        print(f' <| Searching for {self.search_type}\n')
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
-            self.__permutate_cloud_urls()
-            print(f' <| Searching for {self.search_type}\n')
             for url in self.permutations:
                 self.futures.append(self.executor.submit(
                     self._make_request, url))
 
     def _cloud_enum(self):
-        print(f' <| Building permutations\n')
         self.__create_cloud_pool()
