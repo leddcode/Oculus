@@ -23,7 +23,7 @@ class Request:
                 timeout=self.TIMEOUT,
                 verify=False)
 
-    def _make_request(self, url):
+    def _make_request(self, url, total=None):
         self.count_requests += 1
 
         try:
@@ -40,18 +40,16 @@ class Request:
                 self._write(url, f'{res.status_code}{status}')
                 self.LOCK.acquire()
                 print(
-                    self.colour_code(res.status_code, status),
-                    f'<+  {res.status_code}  {length:<12}  {url:<50}  {status}',
-                    self.WHITE
+                    f' {self.colour_code(res.status_code, status)}<+  {res.status_code}  {length:<12}  {url:<50}  {status}{self.WHITE}'
                 )
                 self.LOCK.release()
         except Exception:
             '''Bad Request'''
 
-        progress = round(self.count_requests / len(self.futures) * 40) * '█'
+        progress = round(self.count_requests / total * 40) * '█'
         self.LOCK.acquire()
         print(
-            f'\r {self.YELLOW}<|  {progress:<40}  ::  {len(self.futures)} | {self.count_requests}{self.WHITE}',
+            f'\r {self.YELLOW}<|  {progress:<40}  ::  {total} | {self.count_requests}{self.WHITE}',
             ' ' * 30,
             end='\r'
         )

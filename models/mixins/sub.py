@@ -40,11 +40,15 @@ class Sub:
         with open(self.SUB_LIST, 'r') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
-                for w in wl.read().splitlines():
+                words = wl.read().splitlines()
+                total = len(words)
+                for w in words:
                     sd = f'{w}.{self.name}'
                     if sd not in self.cert_subdomains:
                         self.futures.append(self.executor.submit(
-                            self._make_request, f'{self.protocol}://{sd}'))
+                            self._make_request, f'{self.protocol}://{sd}', total))
+                    else:
+                        self.count_requests += 1
 
     def _search_subs(self):
         print(f' <| Searching for {self.search_type}\n')

@@ -7,9 +7,11 @@ class Dir:
         with open(self.DIR_LIST, 'r') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
-                for w in wl.read().splitlines():
+                words = wl.read().splitlines()
+                total = len(words)
+                for w in words:
                     self.futures.append(self.executor.submit(
-                        self._make_request, f'{self.protocol}://{self.name}/{w}'))
+                        self._make_request, f'{self.protocol}://{self.name}/{w}', total))
 
     def _search_dirs(self):
         print(f' <| Searching for {self.search_type}\n')

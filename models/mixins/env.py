@@ -25,9 +25,10 @@ class Env:
         print(f' <| Searching for {self.search_type}\n')
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
+            total = len(self.permutations)
             for url in self.permutations:
                 self.futures.append(
-                    self.executor.submit(self._make_request, url))
+                    self.executor.submit(self._make_request, url, total))
 
     def _search_envs(self):
         self.__create_env_pool()
