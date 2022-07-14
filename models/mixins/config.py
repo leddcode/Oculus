@@ -4,7 +4,8 @@ class Config:
         '2': 'directories',
         '3': 'subdomains',
         '4': 'emails',
-        '5': 'S3 Buckets'
+        '5': 'S3 Buckets',
+        '6': 'Azure Blob Containers'
     }
 
     BAD_CODES = (400, 404, 411, 500, 501, 502, 503, 504)

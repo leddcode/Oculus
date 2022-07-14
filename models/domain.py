@@ -30,6 +30,7 @@ class Domain(
         self.count_requests = 0
         self.name = None
         self.protocol = None
+        self.option = None
         self.search_type = None
         self.executor = '1337'
         self.parts = []
@@ -47,6 +48,7 @@ class Domain(
 
     def set_search_option(self, option):
         if option in self.OPTIONS.keys():
+            self.option = self.option
             self.search_type = self.OPTIONS[option]
         return self.search_type
 
@@ -124,16 +126,19 @@ class Domain(
 
     def search(self):
         try:
-            if self.search_type == 'environments':
+            if self.search_type == self.OPTIONS['1']:
                 self._search_envs()
-            elif self.search_type == 'directories':
+            elif self.search_type == self.OPTIONS['2']:
                 self._search_dirs()
-            elif self.search_type == 'subdomains':
+            elif self.search_type == self.OPTIONS['3']:
                 self._search_subs()
-            elif self.search_type == 'emails':
+            elif self.search_type == self.OPTIONS['4']:
                 self._search_emails()
-            elif self.search_type == 'S3 Buckets':
-                self._search_s3_buckets()
+            elif self.search_type in [
+                self.OPTIONS['5'],
+                self.OPTIONS['6']
+            ]:
+                self._cloud_enum()
         except Exception as e:
             print('Oops...', e)
         finally:

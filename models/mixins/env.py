@@ -12,8 +12,8 @@ class Env:
 
     def __permutate_env_urls(self):
         with open(self.ENV_LIST, 'r') as wl:
-            words = wl.read()
-            for w in words.splitlines():
+            words = wl.read().splitlines()
+            for w in words:
                 parts = self.parts[:]
                 for i in range(len(self.parts) - 1):
                     part = parts[i]
