@@ -32,7 +32,7 @@ class Colour:
             WHITE = ''
             ORANGE = ''
 
-    EXCEPT_CODES = (401, 403)
+    EXCEPT_CODES = (401, 403, 409)
 
     def colour_code(self, code, status):
         if status == 'Possible false positive!':
