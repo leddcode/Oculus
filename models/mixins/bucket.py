@@ -36,10 +36,6 @@ class Bucket:
                 for w in words:
                     self.__add_s3_permutations(w, keyword)
 
-    def _search_s3_buckets(self):
-        print(f' <| Building permutations\n')
-        self.__create_s3_pool()
-
     def __aws_pool(self):
         total = len(self.permutations)
         for url in self.permutations:
