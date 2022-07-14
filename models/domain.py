@@ -97,9 +97,17 @@ class Domain(
         except Exception:
             print(f' ==> {self.RED}HTTP{self.WHITE}')
             ''' <- Bad Domain?!'''
+    
+    def __normalize_url(self, url):
+        url = url.strip()
+        if url.startswith('https://') or url.startswith('http://'):
+            url = url[url.find('//') + 2:]
+        if url.endswith('/'):
+            url = url[:-1]
+        return url
 
     def __check_url(self, url):
-        url = url.strip()
+        url = self.__normalize_url(url)
         print(' <| Checking host connection', end='')
         try:
             res = self._request(f'https://{url}')
