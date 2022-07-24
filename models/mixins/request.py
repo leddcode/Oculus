@@ -49,10 +49,11 @@ class Request:
         except Exception:
             '''Bad Request'''
 
-        progress = round(self.count_requests / total * 40) * '█'
+        progress = round(self.count_requests / total * 40)
+        bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
         self.LOCK.acquire()
         print(
-            f'\r {self.YELLOW}<|  {progress:<40}  ::  {total} | {self.count_requests}{self.WHITE}',
+            f'\r <|  {bar:<40}  ::  {total} | {self.count_requests}',
             ' ' * 30,
             end='\r'
         )

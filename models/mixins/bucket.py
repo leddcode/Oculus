@@ -83,12 +83,15 @@ class Bucket:
         total = len(self.permutations)
         for result in results:
             self.count_requests += 1
-            progress = round(self.count_requests / total * 40) * '█'
             if result:
                 print(
                     f'{self.CYAN} <+  {result[0]}  {result[1]} {" " * 30}{self.WHITE}')
+            progress = round(self.count_requests / total * 40)
+            bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
+            self.LOCK.acquire()
             print(
-                f'\r{self.YELLOW} <|  {progress:<40}  ::  {total} | {self.count_requests}{self.WHITE}{" " * 30}',
+                f'\r <|  {bar:<40}  ::  {total} | {self.count_requests}',
+                ' ' * 30,
                 end='\r'
             )
 
