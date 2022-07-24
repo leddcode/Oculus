@@ -36,12 +36,6 @@ class Bucket:
                 for w in words:
                     self.__add_s3_permutations(w, keyword)
 
-    def __aws_pool(self):
-        total = len(self.permutations)
-        for url in self.permutations:
-            self.futures.append(self.executor.submit(
-                self._make_request, url, total))
-
     '''Azure Blobs'''
 
     def __add_azure_blobs_permutations(self, word, keyword):
@@ -100,29 +94,50 @@ class Bucket:
 
         self.count_requests = 0
 
-    def __azure_container_pool(self):
-        total = len(self.permutations)
-        for url in self.permutations:
-            self.futures.append(self.executor.submit(
-                self._make_request, url, total))
-
     def __azure_pool(self):
         print(' <| Blobs\n')
         self.__azure_blob_pool()
         if self.azure_targets:
             print('\n\n <| Containers\n')
             self.__permutate_blob_containers()
-            self.__azure_container_pool()
+            self.__cloud_pool()
         else:
             print(' <- No Blobs\n')
 
+    '''Firebase'''
+
+    def __add_firebase_permutations(self, word, keyword):
+        for char in ('-', '_', '.', ''):
+            self.permutations.append(
+                f'https://{word}{char}{keyword}.firebaseio.com/.json')
+            self.permutations.append(
+                f'https://{keyword}{char}{word}.firebaseio.com/.json')
+
+    def __permutate_firebase_urls(self):
+        self.permutations = []
+        with open(self.CLOUD_LIST, 'r') as wl:
+            words = wl.read().splitlines()
+            for keyword in self.__get_keywords():
+                self.permutations.append(
+                    f'https://{keyword}.firebaseio.com/.json')
+                for w in words:
+                    self.__add_firebase_permutations(w, keyword)
+
     '''Cloud - Common'''
 
+    def __cloud_pool(self):
+        total = len(self.permutations)
+        for url in self.permutations:
+            self.futures.append(self.executor.submit(
+                self._make_request, url, total))
+
     def __permutate_cloud_urls(self):
-        if self.search_type == self.OPTIONS['5']:
+        if self.option == 5:
             self.__permutate_s3_urls()
-        elif self.search_type == self.OPTIONS['6']:
+        elif self.option == 6:
             self.__permutate_azure_blobs_urls()
+        elif self.option == 7:
+            self.__permutate_firebase_urls()
 
     def __create_cloud_pool(self):
         print(' <| Building permutations\n')
@@ -130,9 +145,9 @@ class Bucket:
         print(f' <| Searching for {self.search_type}\n')
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
-            if self.search_type == self.OPTIONS['5']:
-                self.__aws_pool()
-            elif self.search_type == self.OPTIONS['6']:
+            if self.option in (5, 7):
+                self.__cloud_pool()
+            elif self.option == 6:
                 self.__azure_pool()
 
     def _cloud_enum(self):

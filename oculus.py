@@ -40,7 +40,7 @@ if __name__ == '__main__':
         while not domain.search_type:
             print(strings.search_types)
             option = input('    Run      >_')
-            search_type = domain.set_search_option(option)
+            search_type = domain.set_search_option(int(option))
             if not domain.search_type:
                 print('\n <- The option does not exist.')
 

@@ -48,7 +48,7 @@ class Domain(
 
     def set_search_option(self, option):
         if option in self.OPTIONS.keys():
-            self.option = self.option
+            self.option = option
             self.search_type = self.OPTIONS[option]
         return self.search_type
 
@@ -99,7 +99,7 @@ class Domain(
         except Exception:
             print(f' ==> {self.RED}HTTP{self.WHITE}')
             ''' <- Bad Domain?!'''
-    
+
     def __normalize_url(self, url):
         url = url.strip()
         if url.startswith('https://') or url.startswith('http://'):
@@ -126,18 +126,15 @@ class Domain(
 
     def search(self):
         try:
-            if self.search_type == self.OPTIONS['1']:
+            if self.option == 1:
                 self._search_envs()
-            elif self.search_type == self.OPTIONS['2']:
+            elif self.option == 2:
                 self._search_dirs()
-            elif self.search_type == self.OPTIONS['3']:
+            elif self.option == 3:
                 self._search_subs()
-            elif self.search_type == self.OPTIONS['4']:
+            elif self.option == 4:
                 self._search_emails()
-            elif self.search_type in [
-                self.OPTIONS['5'],
-                self.OPTIONS['6']
-            ]:
+            elif self.option in (5, 6, 7):
                 self._cloud_enum()
         except Exception as e:
             print('Oops...', e)

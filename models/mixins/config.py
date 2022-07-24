@@ -1,11 +1,12 @@
 class Config:
     OPTIONS = {
-        '1': 'environments',
-        '2': 'directories',
-        '3': 'subdomains',
-        '4': 'emails',
-        '5': 'S3 Buckets',
-        '6': 'Azure Blob Containers'
+        1: 'environments',
+        2: 'directories',
+        3: 'subdomains',
+        4: 'emails',
+        5: 'S3 Buckets',
+        6: 'Azure Blob Containers',
+        7: 'Firebase Databases'
     }
 
     BAD_CODES = (400, 404, 411, 500, 501, 502, 503, 504)

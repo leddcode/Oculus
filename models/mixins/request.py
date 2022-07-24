@@ -34,9 +34,12 @@ class Request:
                 if length not in self.response_length_list:
                     self.response_length_list.append(length)
                     status = '' * 20
-                if (self.search_type == self.OPTIONS['5']
-                        and 'x-amz-bucket-region' in res.headers):
+
+                if self.option == 5 and 'x-amz-bucket-region' in res.headers:
                     status = res.headers['x-amz-bucket-region']
+                elif self.option == 7 and res.status_code > 401:
+                    return
+
                 self._write(url, f'{res.status_code}{status}')
                 self.LOCK.acquire()
                 print(

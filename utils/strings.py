@@ -7,6 +7,7 @@ search_types = '''
     4. Mail Server DNS records and Emails Discovery
     5. S3 Buckets
     6. Azure Blob Containers
+    7. Firebase Databases
     _______________________________________________
 '''
 
@@ -23,7 +24,7 @@ banner_speed = '''
                 / /_/ // /__ / /_/ /_  / / /_/ /_(__  )
                 \____/ \___/ \__,_/ /_/  \__,_/ /____/
 
-                v1.1.7
+                v1.1.8
                 By @leddcode'''
 
 solid_line = '''
