@@ -88,7 +88,6 @@ class Bucket:
                     f'{self.CYAN} <+  {result[0]}  {result[1]} {" " * 30}{self.WHITE}')
             progress = round(self.count_requests / total * 40)
             bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
-            self.LOCK.acquire()
             print(
                 f'\r <|  {bar:<40}  ::  {total} | {self.count_requests}',
                 ' ' * 30,
