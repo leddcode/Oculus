@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
+from itertools import combinations
 
 import requests
 
@@ -16,10 +17,11 @@ class Bucket:
             f' <| Keywords: {self.GREEN}{",".join(keywords)}{self.WHITE}\n'
         )
         if len(keywords) > 1:
-            tmp = keywords[:]
-            for sign in ('', '-', '_'):
-                keywords.extend(
-                    [f'{sign}'.join(tmp), f'{sign}'.join(reversed(tmp))])
+            combs = combinations(keywords, 2)
+            for comb in combs:
+                for sign in ('', '-', '_'):
+                    keywords.extend(
+                        [f'{sign}'.join(comb), f'{sign}'.join(reversed(comb))])
         return keywords
 
     '''S3 Buckets'''
