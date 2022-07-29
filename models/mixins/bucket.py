@@ -9,7 +9,12 @@ class Bucket:
         self.azure_targets = []
 
     def __get_keywords(self):
-        keywords = [w for w in self.name.split('.')[:-1] if len(w) > 3]
+        keywords = [
+            w for w in self.name.split('.')[:-1] if len(w) > 3
+        ] + self.keywords
+        print(
+            f' <| Keywords: {self.GREEN}{",".join(keywords)}{self.WHITE}\n'
+        )
         if len(keywords) > 1:
             tmp = keywords[:]
             for sign in ('', '-', '_'):

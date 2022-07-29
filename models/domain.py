@@ -35,6 +35,7 @@ class Domain(
         self.executor = '1337'
         self.parts = []
         self.futures = []
+        self.keywords = []
         self.permutations = []
         self.cert_subdomains = []
         self.response_length_list = []
@@ -50,6 +51,14 @@ class Domain(
         if option in self.OPTIONS.keys():
             self.option = option
             self.search_type = self.OPTIONS[option]
+        if option in (5, 6, 7):
+            print(
+                '\n    Pass additional keywords separated with comma, or leave blank.')
+            print('    Ex: word1,word2,word3')
+            keywords = input('    Keywords >_')
+            print()
+            if keywords:
+                self.keywords = [k.strip() for k in keywords.split(",")]
         return self.search_type
 
     def set_threads(self, threads):
