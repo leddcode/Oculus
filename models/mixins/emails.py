@@ -4,7 +4,7 @@ import requests
 class Email:
 
     '''   ⭐⭐⭐   '''
-    URL = "https://trophyio.herokuapp.com"
+    URL = "https://trophy.onrender.com"
     COOKIES = {
         "Don't forget to star the Oculus project!":
         "https://github.com/leddcode/Oculus"
