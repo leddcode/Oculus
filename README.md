@@ -1,7 +1,7 @@
 # Oculus
 
 Oculus is a Domain OSINT Tool used to discover environments, directories, and subdomains of a particular domain.
-Additionally, it is useful for searching leaked email addresses and MX records of a domain.
+Additionally, it is useful for searching S3 Buckets, Azure Blob Containers, Firebase DBs, leaked email addresses and MX records of a domain.
 
 ![Build](https://img.shields.io/badge/Built%20with-Python-Blue)
 
