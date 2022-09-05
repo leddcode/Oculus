@@ -4,6 +4,7 @@ Be easy and interactive ;)
 
 @author: leddcode
 """
+import random
 
 import requests
 
@@ -12,8 +13,7 @@ from utils import strings
 
 if __name__ == '__main__':
     domain = Domain()
-    print(strings.banner_speed)
-    print(strings.solid_line)
+    print(random.choice(strings.banners), strings.solid_line)
 
     print(' <| Checking the version...')
 
