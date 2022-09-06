@@ -21,7 +21,7 @@ if __name__ == '__main__':
         res = requests.get(
             'https://raw.githubusercontent.com/leddcode/Oculus/main/utils/strings.py')
 
-        if strings.banner_speed not in res.text:
+        if strings.version not in res.text:
             print(Domain.RED, '<| New version available!')
             print(
                 f" <| Run {Domain.PURPLE}'git pull' {Domain.RED}command to update{Domain.WHITE}\n")
