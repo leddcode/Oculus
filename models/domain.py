@@ -36,6 +36,7 @@ class Domain(
         self.parts = []
         self.futures = []
         self.keywords = []
+        self.extensions = []
         self.permutations = []
         self.cert_subdomains = []
         self.response_length_list = []
@@ -51,7 +52,16 @@ class Domain(
         if option in self.OPTIONS.keys():
             self.option = option
             self.search_type = self.OPTIONS[option]
-        if option in (5, 6, 7):
+        
+        if option == 2:
+            print(
+                '\n    Pass file extensions separated with comma, or leave blank.')
+            print('    Ex: php,aspx')
+            extensions = input('    Extensions >_')
+            print()
+            if extensions:
+                self.extensions = [ext.strip() for ext in extensions.split(",")]
+        elif option in (5, 6, 7):
             print(
                 '\n    Pass additional keywords separated with comma, or leave blank.')
             print('    Ex: word1,word2,word3')
@@ -59,6 +69,7 @@ class Domain(
             print()
             if keywords:
                 self.keywords = [k.strip() for k in keywords.split(",")]
+
         return self.search_type
 
     def set_threads(self, threads):
