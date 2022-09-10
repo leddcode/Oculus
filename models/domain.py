@@ -1,5 +1,7 @@
 import random
 
+from concurrent.futures import FIRST_COMPLETED, wait
+
 from models.mixins.bucket import Bucket
 from models.mixins.colour import Colour
 from models.mixins.config import Config
@@ -29,8 +31,8 @@ class Domain(
         self.threads = 15
         self.count_requests = 0
         self.name = None
-        self.protocol = None
         self.option = None
+        self.protocol = None
         self.search_type = None
         self.executor = '1337'
         self.parts = []
@@ -38,6 +40,7 @@ class Domain(
         self.keywords = []
         self.extensions = []
         self.permutations = []
+        self.chosen_options = []
         self.cert_subdomains = []
         self.response_length_list = []
         self.headers = self.__get_headers()
@@ -47,12 +50,8 @@ class Domain(
         self.name = self.__check_url(url)
         if self.name:
             return self.__set_parts()
-
-    def set_search_option(self, option):
-        if option in self.OPTIONS.keys():
-            self.option = option
-            self.search_type = self.OPTIONS[option]
-        
+    
+    def __get_additional_lookup_parameters(self, option):
         if option == 2:
             print(
                 '\n    Pass file extensions separated with comma, or leave blank.')
@@ -69,8 +68,19 @@ class Domain(
             print()
             if keywords:
                 self.keywords = [k.strip() for k in keywords.split(",")]
+    
+    def __is_existing_option(self, option:str):
+        if option.strip().isnumeric() and int(option) in self.OPTIONS.keys():
+            return True
 
-        return self.search_type
+    def set_search_option(self, options):
+        chosen_options = [
+            int(o.strip()) for o in options.split(',') if self.__is_existing_option(o)]
+        if chosen_options:
+            self.chosen_options = chosen_options
+        if len(chosen_options) == 1:
+           self.__get_additional_lookup_parameters(chosen_options[0])
+        return self.chosen_options
 
     def set_threads(self, threads):
         if threads:
@@ -145,18 +155,29 @@ class Domain(
             return self.__connect_via_HTTP(url)
 
     def search(self):
-        try:
-            if self.option == 1:
-                self._search_envs()
-            elif self.option == 2:
-                self._search_dirs()
-            elif self.option == 3:
-                self._search_subs()
-            elif self.option == 4:
-                self._search_emails()
-            elif self.option in (5, 6, 7):
-                self._cloud_enum()
-        except Exception as e:
-            print('Oops...', e)
-        finally:
-            print()
+        for opt in self.chosen_options:
+            self.option = opt
+            self.search_type = self.OPTIONS[opt]
+            try:
+                if opt == 1:
+                    self._search_envs()
+                elif opt == 2:
+                    self._search_dirs()
+                elif opt == 3:
+                    self._search_subs()
+                elif opt == 4:
+                    self._search_emails()
+                elif opt in (5, 6, 7):
+                    self._cloud_enum()
+                
+                while self.futures:
+                    done, self.futures = wait(
+                        self.futures, return_when=FIRST_COMPLETED)
+            except Exception as e:
+                print('Oops...', e)
+            finally:
+                self.futures = []
+                self.permutations = []
+                self.response_length_list = []
+                self.count_requests = 0
+                print('\n\n')

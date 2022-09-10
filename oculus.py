@@ -37,14 +37,16 @@ if __name__ == '__main__':
             if not domain.set_name(url):
                 print(' <- Check the Domain Name and try again (Ex. google.com)')
 
-        while not domain.search_type:
+        while not domain.chosen_options:
             print(strings.search_types)
-            option = input('    Run      >_')
-            search_type = domain.set_search_option(int(option))
-            if not domain.search_type:
-                print('\n <- The option does not exist.')
+            options = input('    Run      >_')
+            chosen_options = domain.set_search_option(options)
+            if not domain.chosen_options:
+                print("\n <- The chosen option does not exist.")
+                print('    Multiple options should be separated by commas.')
+                print('    Ex: 3,1,5')
 
-        threads = input('    Threads  >_')
+        threads = input('\n    Threads  >_')
         domain.set_threads(threads)
 
         print(f'\n    Request Timeout  ::  {domain.TIMEOUT}')
