@@ -28,13 +28,13 @@ class Response_Analizer:
             return f' {self.RED}<-{self.WHITE}  Strict-Transport-Security header is not set.'
         res = ''
         if 'max-age=31536000' not in self.res_headers['Strict-Transport-Security']:
-            res +=  f'{self.RED}<-{self.WHITE}  Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n'
+            res +=  f' {self.RED}<-{self.WHITE}  Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n'
         if 'includesubdomains' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f'{self.RED}<-{self.WHITE}  includeSubDomains directive is not set.\n'
+            res += f' {self.RED}<-{self.WHITE}  includeSubDomains directive is not set.\n'
         if 'preload' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f'{self.RED}<-{self.WHITE}  Preload directive is not set.\n'
+            res += f' {self.RED}<-{self.WHITE}  Preload directive is not set.\n'
         if res:
-            return f' {res}'
+            return f'{res}'
 
 
     def __is_misconfigured_xxss(self):
