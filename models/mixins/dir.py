@@ -11,7 +11,10 @@ class Dir:
         return total
 
     def __search_with_extension(self, w, total):
-        if self.extensions and '.' not in w:
+        if (self.extensions
+            and '.' not in w
+            and w[0].isalnum()
+            and w[-1].isalnum()):
             for ext in self.extensions:
                 self.futures.append(self.executor.submit(
                     self._make_request,
