@@ -6,7 +6,8 @@ class Config:
         4: 'emails',
         5: 'S3 Buckets',
         6: 'Azure Blob Containers',
-        7: 'Firebase Databases'
+        7: 'Firebase Databases',
+        8: 'Response Misconfigurations'
     }
 
     BAD_CODES = (400, 404, 411, 500, 501, 502, 503, 504)
