@@ -7,15 +7,15 @@ class Response_Analizer:
 
     def __is_server_header_set(self):
         if 'Server' in self.res_headers:
-            return f' {self.DARKCYAN}<|  Server: {self.res_headers["Server"]}{self.WHITE}'
+            return f' {self.YELLOW}<|  Server: {self.res_headers["Server"]}{self.WHITE}'
 
     def __is_x_powered_by_header_set(self):
         if 'X-Powered-By' in self.res_headers:
-            return f' {self.RED}<-{self.WHITE}  X-Powered-By: {self.res_headers["X-Powered-By"]}'
+            return f' {self.YELLOW}<|  X-Powered-By: {self.res_headers["X-Powered-By"]}{self.WHITE}'
 
     def __is_asp_net_header_set(self):
         if 'X-AspNet-Version' in self.res_headers:
-            return f' {self.RED}<-{self.WHITE}  Asp.Net Version: {self.res_headers["X-AspNet-Version"]}'
+            return f' {self.YELLOW}<|  Asp.Net Version: {self.res_headers["X-AspNet-Version"]}{self.WHITE}'
 
     def __is_misconfigured_content_type(self):
         if 'X-Content-Type-Options' not in self.res_headers:
@@ -94,16 +94,16 @@ class Response_Analizer:
             None,
             self.__is_asp_net_header_set())
         self.__print_test_result(
-            None,
+            'X-Content-Type-Options',
             self.__is_misconfigured_content_type())
         self.__print_test_result(
             'Strict-Transport-Security',
             self.__is_misconfigured_hsts())
         self.__print_test_result(
-            None,
+            'X-XSS-Protection',
             self.__is_misconfigured_xxss())
         self.__print_test_result(
-            None,
+            'X-Frame-Options',
             self.__is_misconfigured_xframe())
         self.__print_test_result(
             'CSP',
