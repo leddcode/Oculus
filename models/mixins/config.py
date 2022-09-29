@@ -10,6 +10,8 @@ class Config:
         8: 'Response Misconfigurations'
     }
 
+    TESTS_WITH_THREADS = (1, 2, 3, 5, 6, 7)
+
     BAD_CODES = (400, 404, 411, 500, 501, 502, 503, 504)
 
     ENV_LIST = 'wordlists/env_wordlist.txt'

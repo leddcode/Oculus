@@ -2,6 +2,7 @@
 #  1. Analize multiple response
 #  2. Search for tokens
 #  3. Parse JWT
+#  4. GraphQL Explorer
 
 class Response_Analizer:
 
