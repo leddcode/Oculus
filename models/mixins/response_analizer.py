@@ -52,7 +52,7 @@ class Response_Analizer:
     def __is_misconfigured_csp(self):
         if 'Content-Security-Policy' not in self.res_headers:
             return f' {self.RED}<-{self.WHITE}  CSP protection is not implemented.'
-        return f' {self.DARKCYAN}<+  self.res_headers["Content-Security-Policy"]'
+        return f' {self.GREEN}<+  {self.res_headers["Content-Security-Policy"]}'
 
 
     def __are_cookies_configured(self):
