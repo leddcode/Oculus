@@ -42,38 +42,38 @@ class Response_Analizer:
 
     def __is_misconfigured_content_type(self):
         if 'X-Content-Type-Options' not in self.res_headers:
-            return f' {self.RED}<-{self.WHITE}  X-Content-Type-Options header is not set.'
+            return f' {self.RED}<X{self.WHITE}  X-Content-Type-Options header is not set.'
         elif self.res_headers['X-Content-Type-Options'] != 'nosniff':
-            return f' {self.RED}<-{self.WHITE}  X-Content-Type-Options header is misconfigured and set to: {self.res_headers["X-Content-Type-Options"]}'
+            return f' {self.RED}<X{self.WHITE}  X-Content-Type-Options header is misconfigured and set to: {self.res_headers["X-Content-Type-Options"]}'
 
     def __is_misconfigured_hsts(self):
         if 'Strict-Transport-Security' not in self.res_headers:
-            return f' {self.RED}<-{self.WHITE}  Strict-Transport-Security header is not set.'
+            return f' {self.RED}<X{self.WHITE}  Strict-Transport-Security header is not set.'
         res = ''
         if 'max-age=31536000' not in self.res_headers['Strict-Transport-Security']:
-            res +=  f' {self.RED}<-{self.WHITE}  Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n'
+            res +=  f' {self.RED}<X{self.WHITE}  Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n'
         if 'includesubdomains' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f' {self.RED}<-{self.WHITE}  includeSubDomains directive is not set.\n'
+            res += f' {self.RED}<X{self.WHITE}  includeSubDomains directive is not set.\n'
         if 'preload' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f' {self.RED}<-{self.WHITE}  Preload directive is not set.\n'
+            res += f' {self.RED}<X{self.WHITE}  Preload directive is not set.\n'
         if res:
             return f'{res}'
 
     def __is_misconfigured_xxss(self):
         if 'X-XSS-Protection' not in self.res_headers:
-            return f' {self.RED}<-{self.WHITE}  X-XSS-Protection header is not set.'
+            return f' {self.RED}<X{self.WHITE}  X-XSS-Protection header is not set.'
         elif '1; mode=block' not in self.res_headers['X-XSS-Protection']:
-            return f' {self.RED}<-{self.WHITE}  X-XSS-Protection header is misconfigured and set to: {self.res_headers["X-XSS-Protection"]}'
+            return f' {self.RED}<X{self.WHITE}  X-XSS-Protection header is misconfigured and set to: {self.res_headers["X-XSS-Protection"]}'
 
     def __is_misconfigured_xframe(self):
         if 'X-Frame-Options' not in self.res_headers:
-            return f' {self.RED}<-{self.WHITE}  X-Frame-Options header is not set.'
+            return f' {self.RED}<X{self.WHITE}  X-Frame-Options header is not set.'
         elif self.res_headers['X-Frame-Options'].lower() not in ('sameorigin', 'deny') :
-            return f' {self.RED}<-{self.WHITE}  X-Frame-Options header is misconfigured and set to: {self.res_headers["X-Frame-Options"]}'
+            return f' {self.RED}<X{self.WHITE}  X-Frame-Options header is misconfigured and set to: {self.res_headers["X-Frame-Options"]}'
 
     def __is_misconfigured_csp(self):
         if 'Content-Security-Policy' not in self.res_headers:
-            return f' {self.RED}<-{self.WHITE}  CSP protection is not implemented.'
+            return f' {self.RED}<X{self.WHITE}  CSP protection is not implemented.'
         return f' {self.GREEN}<+  {self.res_headers["Content-Security-Policy"]}'
 
     def __are_cookies_configured(self):
@@ -100,7 +100,7 @@ class Response_Analizer:
         return j
 
     def __get_graphql_schema(self, graphql_endpoint):
-        introspection_query = {"query":"\n query IntrospectionQuery {\r\n __schema {\r\n queryType { name }\r\n mutationType { name }\r\n subscriptionType { name }\r\n types {\r\n ...FullType\r\n }\r\n directives {\r\n name\r\n description\r\n locations\r\n args {\r\n ...InputValue\r\n }\r\n }\r\n }\r\n }\r\n\r\n fragment FullType on __Type {\r\n kind\r\n name\r\n description\r\n fields(includeDeprecated: true) {\r\n name\r\n description\r\n args {\r\n ...InputValue\r\n }\r\n type {\r\n ...TypeRef\r\n }\r\n isDeprecated\r\n deprecationReason\r\n }\r\n inputFields {\r\n ...InputValue\r\n }\r\n interfaces {\r\n ...TypeRef\r\n }\r\n enumValues(includeDeprecated: true) {\r\n name\r\n description\r\n isDeprecated\r\n deprecationReason\r\n }\r\n possibleTypes {\r\n ...TypeRef\r\n }\r\n }\r\n\r\n fragment InputValue on __InputValue {\r\n name\r\n description\r\n type { ...TypeRef }\r\n defaultValue\r\n }\r\n\r\n fragment TypeRef on __Type {\r\n kind\r\n name\r\n ofType {\r\n kind\r\n name\r\n ofType {\r\n kind\r\n name\r\n ofType {\r\n kind\r\n name\r\n ofType {\r\n kind\r\n name\r\n ofType {\r\n kind\r\n name\r\n ofType {\r\n kind\r\n name\r\n ofType {\r\n kind\r\n name\r\n }\r\n }\r\n }\r\n }\r\n }\r\n }\r\n }\r\n }\r\n "}
+        introspection_query = {"query":"\n query IntrospectionQuery {\r\n __schema {\r\n queryType { name }\r\n mutationType { name }\r\n subscriptionType { name }\r\n types{name,fields{name}}\r\n }\r\n }\r\n "}
         gres = requests.post(self.url_to_analize + graphql_endpoint, data=introspection_query, allow_redirects=False)
         if gres.status_code == 301:
             gres = requests.post(gres.headers['Location'], data=introspection_query)
@@ -160,4 +160,4 @@ class Response_Analizer:
         
         self.__print_test_result(
             'GraphQL API',
-            graphql_test_result if graphql_test_result else f' {self.CYAN}<X{self.WHITE}  GraphQL API wasn\'t detected..\n' )
+            graphql_test_result if graphql_test_result else f' {self.RED}<X{self.WHITE}  GraphQL API wasn\'t detected..\n' )
