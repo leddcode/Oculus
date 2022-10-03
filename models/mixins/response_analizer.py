@@ -42,38 +42,38 @@ class Response_Analizer:
 
     def __is_misconfigured_content_type(self):
         if 'X-Content-Type-Options' not in self.res_headers:
-            return f' {self.RED}<X{self.WHITE}  X-Content-Type-Options header is not set.'
+            return f' {self.RED}<x{self.WHITE}  X-Content-Type-Options header is not set.'
         elif self.res_headers['X-Content-Type-Options'] != 'nosniff':
-            return f' {self.RED}<X{self.WHITE}  X-Content-Type-Options header is misconfigured and set to: {self.res_headers["X-Content-Type-Options"]}'
+            return f' {self.RED}<x{self.WHITE}  X-Content-Type-Options header is misconfigured and set to: {self.res_headers["X-Content-Type-Options"]}'
 
     def __is_misconfigured_hsts(self):
         if 'Strict-Transport-Security' not in self.res_headers:
-            return f' {self.RED}<X{self.WHITE}  Strict-Transport-Security header is not set.'
+            return f' {self.RED}<x{self.WHITE}  Strict-Transport-Security header is not set.'
         res = ''
         if 'max-age=31536000' not in self.res_headers['Strict-Transport-Security']:
-            res +=  f' {self.RED}<X{self.WHITE}  Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n'
+            res +=  f' {self.RED}<x{self.WHITE}  Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n'
         if 'includesubdomains' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f' {self.RED}<X{self.WHITE}  includeSubDomains directive is not set.\n'
+            res += f' {self.RED}<x{self.WHITE}  includeSubDomains directive is not set.\n'
         if 'preload' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f' {self.RED}<X{self.WHITE}  Preload directive is not set.\n'
+            res += f' {self.RED}<x{self.WHITE}  Preload directive is not set.\n'
         if res:
             return f'{res}'
 
     def __is_misconfigured_xxss(self):
         if 'X-XSS-Protection' not in self.res_headers:
-            return f' {self.RED}<X{self.WHITE}  X-XSS-Protection header is not set.'
+            return f' {self.RED}<x{self.WHITE}  X-XSS-Protection header is not set.'
         elif '1; mode=block' not in self.res_headers['X-XSS-Protection']:
-            return f' {self.RED}<X{self.WHITE}  X-XSS-Protection header is misconfigured and set to: {self.res_headers["X-XSS-Protection"]}'
+            return f' {self.RED}<x{self.WHITE}  X-XSS-Protection header is misconfigured and set to: {self.res_headers["X-XSS-Protection"]}'
 
     def __is_misconfigured_xframe(self):
         if 'X-Frame-Options' not in self.res_headers:
-            return f' {self.RED}<X{self.WHITE}  X-Frame-Options header is not set.'
+            return f' {self.RED}<x{self.WHITE}  X-Frame-Options header is not set.'
         elif self.res_headers['X-Frame-Options'].lower() not in ('sameorigin', 'deny') :
-            return f' {self.RED}<X{self.WHITE}  X-Frame-Options header is misconfigured and set to: {self.res_headers["X-Frame-Options"]}'
+            return f' {self.RED}<x{self.WHITE}  X-Frame-Options header is misconfigured and set to: {self.res_headers["X-Frame-Options"]}'
 
     def __is_misconfigured_csp(self):
         if 'Content-Security-Policy' not in self.res_headers:
-            return f' {self.RED}<X{self.WHITE}  CSP protection is not implemented.'
+            return f' {self.RED}<x{self.WHITE}  CSP protection is not implemented.'
         return f' {self.GREEN}<+  {self.res_headers["Content-Security-Policy"]}'
 
     def __are_cookies_configured(self):
@@ -83,11 +83,11 @@ class Response_Analizer:
             for c in cookies:
                 cres = f' {self.ORANGE}#{self.WHITE}   {c.strip()}\n'
                 if 'HttpOnly' not in c:
-                    cres += f' {self.RED}<-{self.WHITE}  The "HttpOnly" flag is not set.\n'
+                    cres += f' {self.RED}<x{self.WHITE}  The "HttpOnly" flag is not set.\n'
                 if 'Secure' not in c:
-                    cres += f' {self.RED}<-{self.WHITE}  The "Secure" flag is not set.\n'
+                    cres += f' {self.RED}<x{self.WHITE}  The "Secure" flag is not set.\n'
                 if 'SameSite=None' in c:
-                    cres += f' {self.RED}<-{self.WHITE}  The "SameSite" property is set to "None".\n'
+                    cres += f' {self.RED}<x{self.WHITE}  The "SameSite" property is set to "None".\n'
                 res += cres + '\n'
             return res
     
