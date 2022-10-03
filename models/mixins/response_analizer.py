@@ -121,6 +121,7 @@ class Response_Analizer:
             text = '\n     '.join(res.text.splitlines())
             text = text.replace('Sitemap:', f'{self.CYAN}Sitemap:{self.WHITE}')
             text = text.replace('User-agent:', f'{self.CYAN}User-agent:{self.WHITE}')
+            text = text.replace('User-Agent:', f'{self.CYAN}User-Agent:{self.WHITE}')
             text = text.replace('Disallow:', f'{self.RED}Disallow:{self.WHITE}')
             return '\n     ' + text.replace('Allow:', f'{self.GREEN}Allow:   {self.WHITE}')
         return '\n     Not found.'
