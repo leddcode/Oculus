@@ -160,4 +160,4 @@ class Response_Analizer:
         
         self.__print_test_result(
             'GraphQL API',
-            graphql_test_result if graphql_test_result else f' {self.RED}<X{self.WHITE}  GraphQL API wasn\'t detected..\n' )
+            graphql_test_result if graphql_test_result else ' <:  GraphQL API wasn\'t detected..\n' )
