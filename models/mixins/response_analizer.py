@@ -80,14 +80,14 @@ class Response_Analizer:
             cookies = self.res_headers['set-cookie'].split(',')
             res = ''
             for c in cookies:
-                cres = f' {self.ORANGE}#{self.WHITE}   {c.strip()}\n'
+                cres = f'\n {self.BLUE}<#{self.WHITE}  {c.strip()}\n'
                 if 'HttpOnly' not in c:
                     cres += f' {self.RED}<x{self.WHITE}  The "HttpOnly" flag is not set.\n'
                 if 'Secure' not in c:
                     cres += f' {self.RED}<x{self.WHITE}  The "Secure" flag is not set.\n'
                 if 'SameSite=None' in c:
                     cres += f' {self.RED}<x{self.WHITE}  The "SameSite" property is set to "None".\n'
-                res += cres + '\n'
+                res += cres
             return res
     
 
@@ -178,4 +178,4 @@ class Response_Analizer:
         
         self.__print_test_result(
             'GraphQL API',
-            graphql_test_result if graphql_test_result else ' <|  GraphQL API wasn\'t detected..\n' )
+            graphql_test_result if graphql_test_result else ' <|  GraphQL API wasn\'t detected..' )
