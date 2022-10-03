@@ -2,8 +2,7 @@
 #  1. Analize multiple response
 #  2. Search for tokens
 #  3. Parse JWT
-#  4. GraphQL Explorer
-#  5. WP analysis (users, admin page and so on)
+#  4. WP analysis (users, admin page and so on)
 import json
 
 import requests
@@ -30,15 +29,15 @@ class Response_Analizer:
 
     def __is_server_header_set(self):
         if 'Server' in self.res_headers:
-            return f' {self.YELLOW}<|  Server: {self.res_headers["Server"]}{self.WHITE}'
+            return f' {self.YELLOW}<|  Server:{self.WHITE} {self.res_headers["Server"]}'
 
     def __is_x_powered_by_header_set(self):
         if 'X-Powered-By' in self.res_headers:
-            return f' {self.YELLOW}<|  X-Powered-By: {self.res_headers["X-Powered-By"]}{self.WHITE}'
+            return f' {self.YELLOW}<|  X-Powered-By:{self.WHITE} {self.res_headers["X-Powered-By"]}'
 
     def __is_asp_net_header_set(self):
         if 'X-AspNet-Version' in self.res_headers:
-            return f' {self.YELLOW}<|  Asp.Net Version: {self.res_headers["X-AspNet-Version"]}{self.WHITE}'
+            return f' {self.YELLOW}<|  Asp.Net Version:{self.WHITE} {self.res_headers["X-AspNet-Version"]}'
 
     def __is_misconfigured_content_type(self):
         if 'X-Content-Type-Options' not in self.res_headers:
@@ -114,6 +113,17 @@ class Response_Analizer:
                     return schema
             except Exception:
                 pass
+    
+    '''Robots.txt'''
+    def __robots_txt(self):
+        res = requests.get(self.url_to_analize + '/robots.txt')
+        if res.status_code == 200:
+            text = '\n     '.join(res.text.splitlines())
+            text = text.replace('Sitemap:', f'{self.CYAN}Sitemap:{self.WHITE}')
+            text = text.replace('User-agent:', f'{self.CYAN}User-agent:{self.WHITE}')
+            text = text.replace('Disallow:', f'{self.RED}Disallow:{self.WHITE}')
+            return '\n     ' + text.replace('Allow:', f'{self.GREEN}Allow:   {self.WHITE}')
+        return '\n     Not found.'
 
     def __print_test_result(self, test_name, test_res):
         if test_res:
@@ -126,8 +136,9 @@ class Response_Analizer:
         self.server_response = self._request(url)
         self.res_headers = self.server_response.headers
 
-        print(f' <| Analizing {self.url_to_analize}\n')
+        print(f'{self.YELLOW} <|  URL:{self.WHITE} {self.url_to_analize}\n')
 
+        '''Headers'''
         self.__print_test_result(
             None,
             self.__is_server_header_set())
@@ -155,7 +166,13 @@ class Response_Analizer:
         self.__print_test_result(
             'Cookies',
             self.__are_cookies_configured())
+        
+        '''Robots.txt'''
+        self.__print_test_result(
+            'Robots.txt',
+            self.__robots_txt())
 
+        '''GraphQL'''
         graphql_test_result = self.__test_graphql()
         
         self.__print_test_result(
