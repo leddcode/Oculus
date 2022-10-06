@@ -3,12 +3,16 @@
 #  2. Search for tokens
 #  3. Parse JWT
 #  4. WP analysis (users, admin page and so on)
+from concurrent.futures import ThreadPoolExecutor
 import json
+import socket
+from threading import Lock
 
 import requests
 
 
 class Response_Analizer:
+    LOCK = Lock()
     
     GraphQL_ENDPOINTS = (
         'graphql/',
@@ -100,9 +104,9 @@ class Response_Analizer:
 
     def __get_graphql_schema(self, graphql_endpoint):
         introspection_query = {"query":"\n query IntrospectionQuery {\r\n __schema {\r\n queryType { name }\r\n mutationType { name }\r\n subscriptionType { name }\r\n types{name,fields{name}}\r\n }\r\n }\r\n "}
-        gres = requests.post(self.url_to_analize + graphql_endpoint, data=introspection_query, allow_redirects=False)
+        gres = requests.post(self.url_to_analize + graphql_endpoint, data=introspection_query, allow_redirects=False, timeout=3)
         if gres.status_code == 301:
-            gres = requests.post(gres.headers['Location'], data=introspection_query)
+            gres = requests.post(gres.headers['Location'], data=introspection_query, timeout=3)
         return self.__to_pretty_json(gres.json())
 
     def __test_graphql(self):
@@ -125,13 +129,70 @@ class Response_Analizer:
             text = text.replace('Disallow:', f'{self.RED}Disallow:{self.WHITE}')
             return '\n     ' + text.replace('Allow:', f'{self.GREEN}Allow:   {self.WHITE}')
         return '\n     Not found.'
+    
+    '''IP Scanner'''
+    def __get_host_ip(self):
+        return socket.gethostbyname(self.name)
 
+    def __tcp_scan_port(self, host_ip, port):
+        self.LOCK.acquire()
+        print(f'\r     TCP {port}', ' ' * 10, end='\r' )
+        self.LOCK.release()
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(2)
+            s.connect((host_ip, port))
+            try:
+                banner = s.recv(1024).decode()
+                if not banner:
+                    banner = '??'
+                self.LOCK.acquire()
+                print(f"     TCP [OPEN] {port}  //  {banner.replace('/n', '|').strip()}")
+                self.LOCK.release()
+            except:
+                self.LOCK.acquire()
+                print(f"     TCP [OPEN] {port}")
+                self.LOCK.release()
+            finally:
+                self.ports_open += 1
+                s.close()
+        except:
+            pass
+
+    def __udp_scan_port(self, host_ip, port, m='0c'):
+        self.LOCK.acquire()
+        print(f'\r     UDP {port}', ' ' * 10, end='\r' )
+        self.LOCK.release()
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.settimeout(0.2)
+            s.sendto(m.encode(), (host_ip, port))
+            o = (s.recvfrom(1024))
+            self.LOCK.acquire()
+            print(f'     UDP [OPEN] {port} ')
+            self.LOCK.release()
+            self.ports_open += 1
+        except:
+            pass
+
+    def __ip_scanner(self, host_ip):
+        total_ports = 65535
+        with ThreadPoolExecutor(max_workers=self.threads) as executor:
+            self.executor = executor
+            for port in range(1, total_ports):
+                self.futures.append(self.executor.submit(
+                    self.__tcp_scan_port, host_ip, port))
+                self.futures.append(self.executor.submit(
+                    self.__udp_scan_port, host_ip, port))
+    
+    '''Print results'''
     def __print_test_result(self, test_name, test_res):
         if test_res:
             if test_name:
                 print(f'\n {self.YELLOW}<|  {test_name}{self.WHITE}')
             print(test_res)
 
+    '''RUN'''
     def _analize_response(self, url):
         self.url_to_analize = url
         self.server_response = self._request(url)
@@ -178,4 +239,12 @@ class Response_Analizer:
         
         self.__print_test_result(
             'GraphQL API',
-            graphql_test_result if graphql_test_result else ' <|  GraphQL API wasn\'t detected..' )
+            graphql_test_result if graphql_test_result else ' <|  GraphQL API wasn\'t detected.' )
+
+        '''IP Scan'''
+        host_ip = self.__get_host_ip()  
+        self.__print_test_result(
+            'IP Scan',
+            f'     {"-" * 50}\n     {self.name}  ::  {host_ip}')
+        print(f'     {"-" * 50}')
+        self.__ip_scanner(host_ip)

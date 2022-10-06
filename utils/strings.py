@@ -10,11 +10,11 @@ search_types = '''
     5. S3 Buckets
     6. Azure Blob Containers
     7. Firebase Databases
-    8. Server Response Misconfigurations
+    8. General Information
     _______________________________________________
 '''
 
-version = 'v1.1.19'
+version = 'v1.1.20'
 credit = 'By @leddcode'
 
 banner_digital = '''

@@ -31,6 +31,7 @@ class Domain(
 
     def __init__(self):
         self.threads = 15
+        self.ports_open = 0
         self.count_requests = 0
         self.name = None
         self.option = None

@@ -7,10 +7,10 @@ class Config:
         5: 'S3 Buckets',
         6: 'Azure Blob Containers',
         7: 'Firebase Databases',
-        8: 'Response Misconfigurations'
+        8: 'General Information'
     }
 
-    TESTS_WITH_THREADS = (1, 2, 3, 5, 6, 7)
+    TESTS_WITH_THREADS = (1, 2, 3, 5, 6, 7, 8)
 
     BAD_CODES = (400, 404, 411, 500, 501, 502, 503, 504)
 
