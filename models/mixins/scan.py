@@ -3,6 +3,7 @@
 #  2. Search for tokens
 #  3. Parse JWT
 #  4. WP analysis (users, admin page and so on)
+#  5. Add: self.name = ip
 from concurrent.futures import ThreadPoolExecutor
 import json
 import socket
@@ -181,10 +182,10 @@ class Scan:
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             for port in range(1, total_ports):
-                self.executor.submit(
-                    self.__tcp_scan_port, host_ip, port)
-                self.executor.submit(
-                    self.__udp_scan_port, host_ip, port)
+                self.futures.append(self.executor.submit(
+                    self.__tcp_scan_port, host_ip, port))
+                self.futures.append(self.executor.submit(
+                    self.__udp_scan_port, host_ip, port))
     
     '''Print results'''
     def __print_test_result(self, test_name, test_res):
@@ -238,14 +239,13 @@ class Scan:
             self.futures.append(self.executor.submit(self.__test_graphql))
             self.futures.append(self.executor.submit(self.__analize_response))
             self.futures.append(self.executor.submit(self.__robots_txt))
-        
-        for f in self.futures:
-            f.result()
+        self._check_futures()
         
         # IP Scan
         host_ip = self.__get_host_ip()
+        ip_scan_banner = f'{self.name}  ::  {host_ip}'
         self.__print_test_result(
-            'IP Scan',
-            f'     {"-" * 50}\n     {self.name}  ::  {host_ip}')
-        print(f'     {"-" * 50}')
+            'IP Scan', f'     {"-" * len(ip_scan_banner)}\n     {ip_scan_banner}')
+        print(f'     {"-" * len(ip_scan_banner)}')
         self.__ip_scanner(host_ip)
+        self._check_futures()

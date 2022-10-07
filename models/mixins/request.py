@@ -58,3 +58,7 @@ class Request:
             end='\r'
         )
         self.LOCK.release()
+    
+    def _check_futures(self):
+        for f in self.futures:
+            f.result()
