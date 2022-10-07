@@ -30,6 +30,7 @@ class Domain(
 ):
 
     def __init__(self):
+        self.port = 443
         self.threads = 15
         self.ports_open = 0
         self.count_requests = 0
@@ -124,6 +125,7 @@ class Domain(
             res = self._request(f'http://{url}')
             if res.status_code not in (400, 404):
                 self.protocol = 'http'
+                self.port = 80
                 print(
                     f' ==> {self.GREEN}HTTP{self.WHITE}')
                 return url
