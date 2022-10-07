@@ -9,8 +9,8 @@ from models.mixins.dir import Dir
 from models.mixins.emails import Email
 from models.mixins.env import Env
 from models.mixins.mx import Mx
-from models.mixins.response_analizer import Response_Analizer
 from models.mixins.request import Request
+from models.mixins.scan import Scan
 from models.mixins.sub import Sub
 from models.mixins.writer import Writer
 
@@ -23,8 +23,8 @@ class Domain(
     Email,
     Env,
     Mx,
-    Response_Analizer,
     Request,
+    Scan,
     Sub,
     Writer
 ):
@@ -173,10 +173,9 @@ class Domain(
                 elif opt in (5, 6, 7):
                     self._cloud_enum()
                 elif opt == 8:
-                    self._analize_response(
+                    self._scan(
                         f'{self.protocol}://{self.name}/'
                     )
-                
                 while self.futures:
                     done, self.futures = wait(
                         self.futures, return_when=FIRST_COMPLETED)

@@ -46,7 +46,7 @@ if __name__ == '__main__':
                 print('    Multiple options should be separated by commas.')
                 print('    Ex: 3,1,5')
 
-        if [t for t in domain.chosen_options if t in domain.TESTS_WITH_THREADS]:
+        if [t for t in domain.chosen_options if t not in domain.TESTS_WITHOUT_THREADS]:
             threads = input('\n    Threads  >_')
             domain.set_threads(threads)
 

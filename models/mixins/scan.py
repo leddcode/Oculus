@@ -11,7 +11,7 @@ from threading import Lock
 import requests
 
 
-class Response_Analizer:
+class Scan:
     LOCK = Lock()
     
     GraphQL_ENDPOINTS = (
@@ -33,7 +33,7 @@ class Response_Analizer:
 
     def __is_server_header_set(self):
         if 'Server' in self.res_headers:
-            return f' {self.YELLOW}<|  Server:{self.WHITE} {self.res_headers["Server"]}'
+            return f'\n {self.YELLOW}<|  Server:{self.WHITE} {self.res_headers["Server"]}'
 
     def __is_x_powered_by_header_set(self):
         if 'X-Powered-By' in self.res_headers:
@@ -104,9 +104,9 @@ class Response_Analizer:
 
     def __get_graphql_schema(self, graphql_endpoint):
         introspection_query = {"query":"\n query IntrospectionQuery {\r\n __schema {\r\n queryType { name }\r\n mutationType { name }\r\n subscriptionType { name }\r\n types{name,fields{name}}\r\n }\r\n }\r\n "}
-        gres = requests.post(self.url_to_analize + graphql_endpoint, data=introspection_query, allow_redirects=False, timeout=3)
+        gres = requests.post(self.url_to_analize + graphql_endpoint, data=introspection_query, allow_redirects=False, timeout=2)
         if gres.status_code == 301:
-            gres = requests.post(gres.headers['Location'], data=introspection_query, timeout=3)
+            gres = requests.post(gres.headers['Location'], data=introspection_query, timeout=2)
         return self.__to_pretty_json(gres.json())
 
     def __test_graphql(self):
@@ -114,12 +114,13 @@ class Response_Analizer:
             try:
                 schema = self.__get_graphql_schema(gep)
                 if schema:
-                    return schema
+                    self.__print_test_result('GraphQL API', schema)
+                    return 
             except Exception:
                 pass
     
     '''Robots.txt'''
-    def __robots_txt(self):
+    def __robots_txt(self, mes='\n     Not found.'):
         res = requests.get(self.url_to_analize + '/robots.txt')
         if res.status_code == 200:
             text = '\n     '.join(res.text.splitlines())
@@ -127,8 +128,8 @@ class Response_Analizer:
             text = text.replace('User-agent:', f'{self.CYAN}User-agent:{self.WHITE}')
             text = text.replace('User-Agent:', f'{self.CYAN}User-Agent:{self.WHITE}')
             text = text.replace('Disallow:', f'{self.RED}Disallow:{self.WHITE}')
-            return '\n     ' + text.replace('Allow:', f'{self.GREEN}Allow:   {self.WHITE}')
-        return '\n     Not found.'
+            mes = '\n     ' + text.replace('Allow:', f'{self.GREEN}Allow:   {self.WHITE}')
+        self.__print_test_result('Robots.txt', mes)
     
     '''IP Scanner'''
     def __get_host_ip(self):
@@ -180,27 +181,26 @@ class Response_Analizer:
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             for port in range(1, total_ports):
-                self.futures.append(self.executor.submit(
-                    self.__tcp_scan_port, host_ip, port))
-                self.futures.append(self.executor.submit(
-                    self.__udp_scan_port, host_ip, port))
+                self.executor.submit(
+                    self.__tcp_scan_port, host_ip, port)
+                self.executor.submit(
+                    self.__udp_scan_port, host_ip, port)
     
     '''Print results'''
     def __print_test_result(self, test_name, test_res):
         if test_res:
+            self.LOCK.acquire()
             if test_name:
                 print(f'\n {self.YELLOW}<|  {test_name}{self.WHITE}')
             print(test_res)
+            self.LOCK.release()
 
-    '''RUN'''
-    def _analize_response(self, url):
-        self.url_to_analize = url
-        self.server_response = self._request(url)
+    '''Response Analysis'''
+    def __analize_response(self):
+        self.server_response = self._request(self.url_to_analize)
         self.res_headers = self.server_response.headers
 
-        print(f'{self.YELLOW} <|  URL:{self.WHITE} {self.url_to_analize}\n')
-
-        '''Headers'''
+        # Headers
         self.__print_test_result(
             None,
             self.__is_server_header_set())
@@ -228,21 +228,22 @@ class Response_Analizer:
         self.__print_test_result(
             'Cookies',
             self.__are_cookies_configured())
-        
-        '''Robots.txt'''
-        self.__print_test_result(
-            'Robots.txt',
-            self.__robots_txt())
 
-        '''GraphQL'''
-        graphql_test_result = self.__test_graphql()
+    '''Full Scan'''
+    def _scan(self, url):
+        self.url_to_analize = url
+        print(f'{self.YELLOW} <|  {self.search_type}{self.WHITE}  [{self.url_to_analize}]\n')
+        with ThreadPoolExecutor(max_workers=self.threads) as executor:
+            self.executor = executor
+            self.futures.append(self.executor.submit(self.__test_graphql))
+            self.futures.append(self.executor.submit(self.__analize_response))
+            self.futures.append(self.executor.submit(self.__robots_txt))
         
-        self.__print_test_result(
-            'GraphQL API',
-            graphql_test_result if graphql_test_result else ' <|  GraphQL API wasn\'t detected.' )
-
-        '''IP Scan'''
-        host_ip = self.__get_host_ip()  
+        for f in self.futures:
+            f.result()
+        
+        # IP Scan
+        host_ip = self.__get_host_ip()
         self.__print_test_result(
             'IP Scan',
             f'     {"-" * 50}\n     {self.name}  ::  {host_ip}')
