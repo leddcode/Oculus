@@ -9,6 +9,7 @@ import json
 import socket
 from threading import Lock
 
+from bs4 import BeautifulSoup as bs
 import requests
 
 
@@ -132,6 +133,48 @@ class Scan:
             mes = '\n     ' + text.replace('Allow:', f'{self.GREEN}Allow:   {self.WHITE}')
         self.__print_test_result('Robots.txt', mes)
     
+    '''Leaks Beta'''
+    def __search_leakix(self):
+        url = f'https://leakix.net/search?scope=leak&q={self.name}'
+        res = requests.get(url)
+        soup = bs(res.text, "html.parser")
+        links = soup.find_all('a')
+        results = []
+        for a in links:
+            if ('/host/' in a['href'] or '/domain/' in a['href']) and a.text not in results:
+                results.append(a.text)
+        return results
+    
+    def __is_ip(self, host):
+        try:
+            socket.inet_aton(host)
+            return 'host'
+        except socket.error:
+            return 'domain'
+
+    def __get_host_leaks(self, host):
+        url = f'https://leakix.net/{self.__is_ip(host)}/{host}'
+        res = requests.get(url)
+        soup = bs(res.text, "html.parser")
+        findings = soup.find_all(class_ = 'list-group list-group-flush')
+        results = []
+        for f in findings:
+            pre = f.find('pre')
+            if pre:
+                results.append(pre.text)
+        return set(results)
+
+    def __leaks(self):
+        hosts = self.__search_leakix()
+        for host in hosts:
+            mes = ''
+            for f in self.__get_host_leaks(host):
+                text = "\n     ".join(f.split("\n"))
+                if '[remote "origin"]' in f:
+                    mes += f'\n     {self.GREEN}/.git/config{self.WHITE}\n'
+                mes += f'\n     {text}'
+            self.__print_test_result(f'LeakIX  ::  {host}', mes)
+    
     '''IP Scanner'''
     def __get_host_ip(self):
         return socket.gethostbyname(self.name)
@@ -238,14 +281,17 @@ class Scan:
             self.executor = executor
             self.futures.append(self.executor.submit(self.__test_graphql))
             self.futures.append(self.executor.submit(self.__analize_response))
+            self.futures.append(self.executor.submit(self.__leaks))
             self.futures.append(self.executor.submit(self.__robots_txt))
         self._check_futures()
         
         # IP Scan
-        host_ip = self.__get_host_ip()
-        ip_scan_banner = f'{self.name}  ::  {host_ip}'
-        self.__print_test_result(
-            'IP Scan', f'     {"-" * len(ip_scan_banner)}\n     {ip_scan_banner}')
-        print(f'     {"-" * len(ip_scan_banner)}')
-        self.__ip_scanner(host_ip)
-        self._check_futures()
+        to_scan_ports = input(f'\n {self.YELLOW}<|  Scan for open ports?{self.WHITE} (y/N)  ')
+        if to_scan_ports == 'y':
+            host_ip = self.__get_host_ip()
+            ip_scan_banner = f'{self.name}  ::  {host_ip}'
+            self.__print_test_result(
+                'IP Scan', f'     {"-" * len(ip_scan_banner)}\n     {ip_scan_banner}')
+            print(f'     {"-" * len(ip_scan_banner)}')
+            self.__ip_scanner(host_ip)
+            self._check_futures()
