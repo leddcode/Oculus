@@ -2,16 +2,18 @@
 #  1. Analize multiple response
 #  2. Search for tokens
 #  3. Parse JWT
-#  4. WP analysis (users, admin page and so on)
-#  5. Add: self.name = ip
+#  4. Add: self.name = ip
 from concurrent.futures import ThreadPoolExecutor
 import json
 import socket
 from threading import Lock
+from urllib3.exceptions import InsecureRequestWarning
 
 from bs4 import BeautifulSoup as bs
 import requests
 
+requests.packages.urllib3.disable_warnings(
+        category=InsecureRequestWarning)
 
 class Scan:
     LOCK = Lock()
@@ -123,20 +125,22 @@ class Scan:
     
     '''Robots.txt'''
     def __robots_txt(self, mes='\n     Not found.'):
-        res = requests.get(self.url_to_analize + '/robots.txt')
+        res = requests.get(
+            self.url_to_analize + '/robots.txt', headers=self.headers, verify=False)
         if res.status_code == 200:
             text = '\n     '.join(res.text.splitlines())
+            text = text.replace('Host:', f'{self.CYAN}Host:      {self.WHITE}')
             text = text.replace('Sitemap:', f'{self.CYAN}Sitemap:{self.WHITE}')
             text = text.replace('User-agent:', f'{self.CYAN}User-agent:{self.WHITE}')
             text = text.replace('User-Agent:', f'{self.CYAN}User-Agent:{self.WHITE}')
-            text = text.replace('Disallow:', f'{self.RED}Disallow:{self.WHITE}')
-            mes = '\n     ' + text.replace('Allow:', f'{self.GREEN}Allow:   {self.WHITE}')
+            text = text.replace('Disallow:', f'{self.RED}Disallow:  {self.WHITE}')
+            mes = '\n     ' + text.replace('Allow:', f'{self.GREEN}Allow:     {self.WHITE}')
         self.__print_test_result('Robots.txt', mes)
     
     '''Leaks Beta'''
     def __search_leakix(self):
         url = f'https://leakix.net/search?scope=leak&q={self.name}'
-        res = requests.get(url)
+        res = requests.get(url, headers=self.headers, verify=False)
         soup = bs(res.text, "html.parser")
         links = soup.find_all('a')
         results = []
@@ -154,7 +158,7 @@ class Scan:
 
     def __get_host_leaks(self, host):
         url = f'https://leakix.net/{self.__is_ip(host)}/{host}'
-        res = requests.get(url)
+        res = requests.get(url, headers=self.headers, verify=False)
         soup = bs(res.text, "html.parser")
         findings = soup.find_all(class_ = 'list-group list-group-flush')
         results = []
@@ -168,12 +172,18 @@ class Scan:
         hosts = self.__search_leakix()
         for host in hosts:
             mes = ''
-            for f in self.__get_host_leaks(host):
-                text = "\n     ".join(f.split("\n"))
+            for i, f in enumerate(self.__get_host_leaks(host)):
+                f_lines = f.split("\n")
+                text = "\n     ".join(f_lines)
+                mes += f'\n     {self.YELLOW}<{i + 1}|'
                 if '[remote "origin"]' in f:
-                    mes += f'\n     {self.GREEN}/.git/config{self.WHITE}\n'
+                    title = '/.git/config'
+                else:
+                    title = f_lines[0] if f_lines[0] else f_lines[1]
+                    title = title.replace(':', '')
+                mes += f' {title}{self.WHITE}\n'
                 mes += f'\n     {text}'
-            self.__print_test_result(f'LeakIX  ::  {host}', mes)
+            self.__print_test_result(f'Indexed Information  ::  {host}', mes)
     
     '''IP Scanner'''
     def __get_host_ip(self):
