@@ -103,7 +103,7 @@ class Scan:
     def __to_pretty_json(self, dic):
         j = json.dumps(dic, sort_keys=True,)
                     # indent=4, separators=(',', ': '))
-        j = j.replace(';', ';\n\t').replace('name', f'{self.ORANGE}name{self.WHITE}')
+        j = j.replace(';', ';\n\t').replace('name', f'{self.DARKCYAN}name{self.WHITE}')
         return j
 
     def __get_graphql_schema(self, graphql_endpoint):
@@ -118,7 +118,7 @@ class Scan:
             try:
                 schema = self.__get_graphql_schema(gep)
                 if schema:
-                    self.__print_test_result('GraphQL API', schema)
+                    self.__print_test_result('GraphQL API', f'\n{schema}')
                     return 
             except Exception:
                 pass
@@ -127,7 +127,7 @@ class Scan:
     def __robots_txt(self, mes='\n     Not found.'):
         res = requests.get(
             self.url_to_analize + '/robots.txt', headers=self.headers, verify=False)
-        if res.status_code == 200:
+        if res.status_code == 200 and 'allow' in res.text.lower():
             text = '\n     '.join(res.text.splitlines())
             text = text.replace('Host:', f'{self.CYAN}Host:      {self.WHITE}')
             text = text.replace('Sitemap:', f'{self.CYAN}Sitemap:   {self.WHITE}')
@@ -181,6 +181,59 @@ class Scan:
                 mes += f'{title}{self.WHITE}\n'
                 mes += f'\n     {text}'
             self.__print_test_result(f'Indexed Information  ::  {host}', mes)
+    
+    '''URL Scan'''
+    def __get_historical_domain_data(self):
+        url = 'https://urlscan.io/api/v1/search/?q=domain:'
+        return requests.get(
+            url + self.name, headers=self.headers, verify=False).json()
+    
+    def __parse_domain_data(self, data):
+        domain_data = {
+            'IP': data['page']['ip'],
+            'Domain Name': data['task']['domain'],
+            'Apex Domain': data['page']['apexDomain'],
+            'ASN': data['page']['asn'],
+            'Technologies': []
+        }
+        
+        # Add Detected Technologies
+        res = requests.get(
+            f'https://urlscan.io/result/{data["_id"]}/', headers=self.headers, verify=False)
+        soup = bs(res.text, "html.parser")
+        soup = soup.find(class_ = 'col col-md-5')
+        bb = soup.find_all('b')
+        for b in bb:
+            if b.text not in ('Overall confidence', 'Detected patterns'):
+                domain_data['Technologies'].append(b.text.strip())
+        return domain_data
+
+    def __get_domain_data(self):
+        data = self.__get_historical_domain_data()
+        if data['results']:
+            results = {}
+            for r in data['results']:
+                if r['task']['domain'] not in results:                    
+                    results[r['task']['domain']] = self.__parse_domain_data(r)
+            return results
+    
+    def __print_domain_data(self):
+        results = self.__get_domain_data()
+        if results:
+            mes = ''
+            for domain_data in results.values():
+                text = f'\n\n     {"=" * 50}\n'
+                for k, v in domain_data.items():
+                    if v:
+                        text += f'     {k}'
+                        if isinstance(v, str):
+                            text += f'{" " * (20 - len(k))}| {v}\n     {"-" * 50}\n'
+                        else:
+                            for technology in v:
+                                text += f'\n{" " * 25}| {technology}'
+                mes += text
+                        
+            self.__print_test_result('URL Scan', mes)
     
     '''IP Scanner'''
     def __get_host_ip(self):
@@ -287,6 +340,7 @@ class Scan:
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             self.futures.append(self.executor.submit(self.__test_graphql))
+            self.futures.append(self.executor.submit(self.__print_domain_data))
             self.futures.append(self.executor.submit(self.__analize_response))
             self.futures.append(self.executor.submit(self.__leaks))
             self.futures.append(self.executor.submit(self.__robots_txt))
