@@ -130,7 +130,7 @@ class Scan:
         if res.status_code == 200:
             text = '\n     '.join(res.text.splitlines())
             text = text.replace('Host:', f'{self.CYAN}Host:      {self.WHITE}')
-            text = text.replace('Sitemap:', f'{self.CYAN}Sitemap:{self.WHITE}')
+            text = text.replace('Sitemap:', f'{self.CYAN}Sitemap:   {self.WHITE}')
             text = text.replace('User-agent:', f'{self.CYAN}User-agent:{self.WHITE}')
             text = text.replace('User-Agent:', f'{self.CYAN}User-Agent:{self.WHITE}')
             text = text.replace('Disallow:', f'{self.RED}Disallow:  {self.WHITE}')
@@ -160,28 +160,25 @@ class Scan:
         url = f'https://leakix.net/{self.__is_ip(host)}/{host}'
         res = requests.get(url, headers=self.headers, verify=False)
         soup = bs(res.text, "html.parser")
-        findings = soup.find_all(class_ = 'list-group list-group-flush')
+        cards = soup.find_all(class_ = 'card')
         results = []
-        for f in findings:
-            pre = f.find('pre')
+        for c in cards:
+            title = c.find(class_ = 'card-header bg-danger')
+            pre = c.find('pre')
             if pre:
-                results.append(pre.text)
+                results.append((title.text.strip(), pre.text))
         return set(results)
 
     def __leaks(self):
         hosts = self.__search_leakix()
         for host in hosts:
             mes = ''
-            for i, f in enumerate(self.__get_host_leaks(host)):
-                f_lines = f.split("\n")
+            for i, leak in enumerate(self.__get_host_leaks(host)):
+                title = leak[0]
+                f_lines = leak[1].split("\n")
                 text = "\n     ".join(f_lines)
-                mes += f'\n     {self.YELLOW}<{i + 1}|'
-                if '[remote "origin"]' in f:
-                    title = '/.git/config'
-                else:
-                    title = f_lines[0] if f_lines[0] else f_lines[1]
-                    title = title.replace(':', '')
-                mes += f' {title}{self.WHITE}\n'
+                mes += f'\n     {self.YELLOW}<{i + 1} '
+                mes += f'{title}{self.WHITE}\n'
                 mes += f'\n     {text}'
             self.__print_test_result(f'Indexed Information  ::  {host}', mes)
     
