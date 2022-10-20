@@ -3,6 +3,7 @@
 #  2. Search for tokens
 #  3. Parse JWT
 #  4. Add: self.name = ip
+#  5. Logging Results
 from concurrent.futures import ThreadPoolExecutor
 import json
 import socket
@@ -254,10 +255,14 @@ class Scan:
                 self.LOCK.acquire()
                 print(f"     TCP [OPEN] {port}  //  {banner.replace('/n', '|').strip()}")
                 self.LOCK.release()
+                self._write(
+                    f"     TCP [OPEN] {port}  //  {banner.replace('/n', '|').strip()}",
+                    'Vulnerability Scan')
             except:
                 self.LOCK.acquire()
                 print(f"     TCP [OPEN] {port}")
                 self.LOCK.release()
+                self._write(f"     TCP [OPEN] {port}", 'Vulnerability Scan')
             finally:
                 self.ports_open += 1
                 s.close()
@@ -276,6 +281,7 @@ class Scan:
             self.LOCK.acquire()
             print(f'     UDP [OPEN] {port} ')
             self.LOCK.release()
+            self._write(f'     UDP [OPEN] {port} ', 'Vulnerability Scan')
             self.ports_open += 1
         except:
             pass
@@ -298,6 +304,7 @@ class Scan:
                 print(f'\n {self.YELLOW}<|  {test_name}{self.WHITE}')
             print(test_res)
             self.LOCK.release()
+            self._write(test_res, 'Vulnerability Scan')
 
     '''Response Analysis'''
     def __analize_response(self):
@@ -337,6 +344,7 @@ class Scan:
     def _scan(self, url):
         self.url_to_analize = url
         print(f'{self.YELLOW} <|  {self.search_type}{self.WHITE}  [{self.url_to_analize}]\n')
+        self._write(f'{self.search_type}  [{self.url_to_analize}]\n', 'Vulnerability Scan')
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             self.futures.append(self.executor.submit(self.__test_graphql))
