@@ -3,7 +3,6 @@
 #  2. Search for tokens
 #  3. Parse JWT
 #  4. Add: self.name = ip
-#  5. Logging Results
 from concurrent.futures import ThreadPoolExecutor
 import json
 import socket
@@ -195,7 +194,8 @@ class Scan:
             'Domain Name': data['task']['domain'],
             'Apex Domain': data['page']['apexDomain'],
             'ASN': data['page']['asn'],
-            'Technologies': []
+            'Technologies': [],
+            'Outgoing Links': []
         }
         
         # Add Detected Technologies
@@ -207,6 +207,17 @@ class Scan:
         for b in bb:
             if b.text not in ('Overall confidence', 'Detected patterns'):
                 domain_data['Technologies'].append(b.text.strip())
+        # Add Outgoing Links
+        res = requests.get(
+            f'https://urlscan.io/result/{data["_id"]}/#links', headers=self.headers, verify=False)
+        soup = bs(res.text, "html.parser")
+        bottoms = soup.find_all(class_ = 'bottom5')
+        for bo in bottoms:
+            parts = bo.text.split('\n')
+            for p in parts:
+                if 'http' in p and 'URL' in p:
+                    domain_data['Outgoing Links'].append(p.strip())
+                    break
         return domain_data
 
     def __get_domain_data(self):
@@ -230,8 +241,9 @@ class Scan:
                         if isinstance(v, str):
                             text += f'{" " * (20 - len(k))}| {v}\n     {"-" * 50}\n'
                         else:
-                            for technology in v:
-                                text += f'\n{" " * 25}| {technology}'
+                            for entry in v:
+                                text += f'\n{" " * 25}| {entry}'
+                            text += f'\n     {"-" * 50}\n'
                 mes += text
                         
             self.__print_test_result('URL Scan', mes)
