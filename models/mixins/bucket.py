@@ -93,13 +93,14 @@ class Bucket:
             if result:
                 print(
                     f'{self.CYAN} <+  {result[0]}  {result[1]} {" " * 30}{self.WHITE}')
-            progress = round(self.count_requests / total * 40)
-            bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
-            print(
-                f'\r <|  {bar:<40}  ::  {total} | {self.count_requests}',
-                ' ' * 30,
-                end='\r'
-            )
+            if self.status_bar in ('y', 'Y', 'yes', 'Yes', 'go', 'sure', 'wtf'):
+                progress = round(self.count_requests / total * 40)
+                bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
+                print(
+                    f'\r <|  {bar:<40}  ::  {total} | {self.count_requests}',
+                    ' ' * 30,
+                    end='\r'
+                )
 
         self.count_requests = 0
 

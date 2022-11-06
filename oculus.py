@@ -49,8 +49,10 @@ if __name__ == '__main__':
         if [t for t in domain.chosen_options if t not in domain.TESTS_WITHOUT_THREADS]:
             threads = input('\n    Threads  >_')
             domain.set_threads(threads)
+        
+        domain.status_bar = input('\n    Status Bar (y/N) ::  ')
 
-        print(f'\n    Request Timeout  ::  {domain.TIMEOUT}')
+        print(f'    Request Timeout  ::  {domain.TIMEOUT}')
         print(f'    Protocol         ::  {domain.protocol}')
         print(f'    User-Agent       ::  {domain.headers["User-Agent"]}\n\n')
         domain.search()

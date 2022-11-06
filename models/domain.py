@@ -37,6 +37,7 @@ class Domain(
         self.name = None
         self.option = None
         self.protocol = None
+        self.status_bar = None
         self.search_type = None
         self.executor = '1337'
         self.parts = []
