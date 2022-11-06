@@ -22,7 +22,7 @@ class Dir:
                 )
 
     def __create_dir_pool(self):
-        with open(self.DIR_LIST, 'r') as wl:
+        with open(self.DIR_LIST, 'r', encoding='utf-8', errors='ignore') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
                 words = wl.read().splitlines()
