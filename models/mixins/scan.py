@@ -49,38 +49,38 @@ class Scan:
 
     def __is_misconfigured_content_type(self):
         if 'X-Content-Type-Options' not in self.res_headers:
-            return f' {self.RED}<x{self.WHITE}  X-Content-Type-Options header is not set.'
+            return f' {self.RED}<:{self.WHITE}  X-Content-Type-Options header is not set.'
         elif self.res_headers['X-Content-Type-Options'] != 'nosniff':
-            return f' {self.RED}<x{self.WHITE}  X-Content-Type-Options header is misconfigured and set to: {self.res_headers["X-Content-Type-Options"]}'
+            return f' {self.RED}<:{self.WHITE}  X-Content-Type-Options header is misconfigured and set to: {self.res_headers["X-Content-Type-Options"]}'
 
     def __is_misconfigured_hsts(self):
         if 'Strict-Transport-Security' not in self.res_headers:
-            return f' {self.RED}<x{self.WHITE}  Strict-Transport-Security header is not set.'
+            return f' {self.RED}<:{self.WHITE}  Strict-Transport-Security header is not set.'
         res = ''
         if 'max-age=31536000' not in self.res_headers['Strict-Transport-Security']:
-            res +=  f' {self.RED}<x{self.WHITE}  Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n'
+            res +=  f' {self.RED}<:{self.WHITE}  Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n'
         if 'includesubdomains' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f' {self.RED}<x{self.WHITE}  includeSubDomains directive is not set.\n'
+            res += f' {self.RED}<:{self.WHITE}  includeSubDomains directive is not set.\n'
         if 'preload' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f' {self.RED}<x{self.WHITE}  Preload directive is not set.\n'
+            res += f' {self.RED}<:{self.WHITE}  Preload directive is not set.\n'
         if res:
             return f'{res}'
 
     def __is_misconfigured_xxss(self):
         if 'X-XSS-Protection' not in self.res_headers:
-            return f' {self.RED}<x{self.WHITE}  X-XSS-Protection header is not set.'
+            return f' {self.RED}<:{self.WHITE}  X-XSS-Protection header is not set.'
         elif '1; mode=block' not in self.res_headers['X-XSS-Protection']:
-            return f' {self.RED}<x{self.WHITE}  X-XSS-Protection header is misconfigured and set to: {self.res_headers["X-XSS-Protection"]}'
+            return f' {self.RED}<:{self.WHITE}  X-XSS-Protection header is misconfigured and set to: {self.res_headers["X-XSS-Protection"]}'
 
     def __is_misconfigured_xframe(self):
         if 'X-Frame-Options' not in self.res_headers:
-            return f' {self.RED}<x{self.WHITE}  X-Frame-Options header is not set.'
+            return f' {self.RED}<:{self.WHITE}  X-Frame-Options header is not set.'
         elif self.res_headers['X-Frame-Options'].lower() not in ('sameorigin', 'deny') :
-            return f' {self.RED}<x{self.WHITE}  X-Frame-Options header is misconfigured and set to: {self.res_headers["X-Frame-Options"]}'
+            return f' {self.RED}<:{self.WHITE}  X-Frame-Options header is misconfigured and set to: {self.res_headers["X-Frame-Options"]}'
 
     def __is_misconfigured_csp(self):
         if 'Content-Security-Policy' not in self.res_headers:
-            return f' {self.RED}<x{self.WHITE}  CSP protection is not implemented.'
+            return f' {self.RED}<:{self.WHITE}  CSP protection is not implemented.'
         return f' {self.GREEN}<+  {self.res_headers["Content-Security-Policy"]}'
 
     def __are_cookies_configured(self):
@@ -90,11 +90,11 @@ class Scan:
             for c in cookies:
                 cres = f'\n {self.BLUE}<#{self.WHITE}  {c.strip()}\n'
                 if 'HttpOnly' not in c:
-                    cres += f' {self.RED}<x{self.WHITE}  The "HttpOnly" flag is not set.\n'
+                    cres += f' {self.RED}<:{self.WHITE}  The "HttpOnly" flag is not set.\n'
                 if 'Secure' not in c:
-                    cres += f' {self.RED}<x{self.WHITE}  The "Secure" flag is not set.\n'
+                    cres += f' {self.RED}<:{self.WHITE}  The "Secure" flag is not set.\n'
                 if 'SameSite=None' in c:
-                    cres += f' {self.RED}<x{self.WHITE}  The "SameSite" property is set to "None".\n'
+                    cres += f' {self.RED}<:{self.WHITE}  The "SameSite" property is set to "None".\n'
                 res += cres
             return res
     
@@ -157,28 +157,35 @@ class Scan:
             return 'domain'
 
     def __get_host_leaks(self, host):
-        url = f'https://leakix.net/{self.__is_ip(host)}/{host}'
-        res = requests.get(url, headers=self.headers, verify=False)
-        soup = bs(res.text, "html.parser")
-        cards = soup.find_all(class_ = 'card')
-        results = []
-        for c in cards:
-            title = c.find(class_ = 'card-header bg-danger')
-            pre = c.find('pre')
-            if pre:
-                results.append((title.text.strip(), pre.text))
-        return set(results)
+        if self.__is_ip(host) == 'domain' and self.name not in host:
+            mes = 'Most likely this domain is not associated with the target domain.'
+            return [(f'During the scan, the following domain was detected: {host}', mes)]
+        else:
+            try:
+                url = f'https://leakix.net/{self.__is_ip(host)}/{host}'
+                res = requests.get(url, headers=self.headers, verify=False)
+                soup = bs(res.text, "html.parser")
+                cards = soup.find_all(class_ = 'card')
+                results = []
+                for c in cards:
+                    title = c.find(class_ = 'card-header bg-danger')
+                    pre = c.find('pre')
+                    if (pre and self.name in pre.text):
+                        results.append((title.text.strip(), pre.text))
+                return set(results)
+            except:
+                pass
 
     def __leaks(self):
         hosts = self.__search_leakix()
         for host in hosts:
             mes = ''
-            for i, leak in enumerate(self.__get_host_leaks(host)):
+            for leak in self.__get_host_leaks(host):
                 title = leak[0]
                 f_lines = leak[1].split("\n")
                 text = "\n     ".join(f_lines)
-                mes += f'\n     {self.YELLOW}<{i + 1} '
-                mes += f'{title}{self.WHITE}\n'
+                mes += f'\n {self.CYAN} * {self.WHITE} '
+                mes += f'{title}\n'
                 mes += f'\n     {text}'
             self.__print_test_result(f'Indexed Information  ::  {host}', mes)
     
@@ -225,8 +232,11 @@ class Scan:
         if data['results']:
             results = {}
             for r in data['results']:
-                if r['task']['domain'] not in results:                    
-                    results[r['task']['domain']] = self.__parse_domain_data(r)
+                if r['task']['domain'] not in results:
+                    try:             
+                        results[r['task']['domain']] = self.__parse_domain_data(r)
+                    except:
+                        pass
             return results
     
     def __print_domain_data(self):
