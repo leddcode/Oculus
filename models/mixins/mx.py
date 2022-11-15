@@ -1,5 +1,6 @@
 import socket
 
+from bs4 import BeautifulSoup as bs
 from dns.resolver import resolve
 import requests
 
@@ -13,17 +14,30 @@ class Mx:
         except:
             return ''
 
+    def __shodan_ip_data(self, target):
+        url = f'https://www.shodan.io/host/{target}'
+        res = requests.get(url, headers=self.headers)
+        soup = bs(res.text, "html.parser")
+        card_general = soup.find(class_ = 'card card-yellow card-padding')
+        if card_general:
+            ports = soup.find_all(class_ = 'bg-primary')
+            card_ports = soup.find_all(class_ = 'card card-padding banner')
+            return card_general, ports, card_ports
+
     def __get_mx_data(self):
         try:
             records = resolve(self.name, 'MX')
+            ips = []
             for rdata in records:
                 rx, domain = str(rdata).split(' ')
                 domain = domain[:-1] if domain.endswith('.') else domain
                 domain_ip = self.__get_ip(domain)
+                ips.append(domain_ip)
                 output = f'<+ {rx} {domain}'
                 output += f'{" " * (55 - len(output))} | {domain_ip}'
                 self._write(output, 'records')
                 print(self.GREEN, output)
+                return ips
         except Exception:
             self._write('<- No MX Records Found', 'records')
             print(self.RED, '<- No MX Records Found')
@@ -79,7 +93,16 @@ class Mx:
 
     def check_records(self):
         print(self.YELLOW, '<| Mail Server Records', self.WHITE)
-        self.__get_mx_data()
+        ips = self.__get_mx_data()
         self.__get_dkim_record()
         self.__get_dmarc_record()
         self.__check_spf_record()
+        if ips:
+            for target in ips:
+                try:
+                    card_general, ports, card_ports = self.__shodan_ip_data(target)
+                    for i in range(len(ports)):
+                        print(self.GREEN, f'<+ Port: {ports[i].text}  ::  {target}:{ports[i].text}')
+                        print(self.CYAN, card_ports[i].text)
+                except:
+                    pass
