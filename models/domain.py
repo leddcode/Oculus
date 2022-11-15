@@ -11,6 +11,7 @@ from models.mixins.env import Env
 from models.mixins.mx import Mx
 from models.mixins.request import Request
 from models.mixins.scan import Scan
+from models.mixins.shodaner import Shodaner
 from models.mixins.sub import Sub
 from models.mixins.writer import Writer
 
@@ -25,6 +26,7 @@ class Domain(
     Mx,
     Request,
     Scan,
+    Shodaner,
     Sub,
     Writer
 ):
