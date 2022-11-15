@@ -104,5 +104,7 @@ class Mx:
                     for i in range(len(ports)):
                         print(self.GREEN, f'<+ Port: {ports[i].text}  ::  {target}:{ports[i].text}')
                         print(self.CYAN, card_ports[i].text)
+                        self._write(f'<+ Port: {ports[i].text}  ::  {target}:{ports[i].text}\n', 'records')
+                        self._write(f'{card_ports[i].text}\n', 'records')
                 except:
                     pass
