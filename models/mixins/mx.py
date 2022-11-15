@@ -37,7 +37,7 @@ class Mx:
                 output += f'{" " * (55 - len(output))} | {domain_ip}'
                 self._write(output, 'records')
                 print(self.GREEN, output)
-                return ips
+            return ips
         except Exception:
             self._write('<- No MX Records Found', 'records')
             print(self.RED, '<- No MX Records Found')
