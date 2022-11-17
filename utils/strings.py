@@ -14,7 +14,7 @@ search_types = '''
     ________________________________________________
 '''
 
-version = 'v1.2.15'
+version = 'v1.2.16'
 credit = 'By @leddcode'
 
 banner_digital = '''

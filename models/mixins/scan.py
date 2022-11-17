@@ -159,35 +159,42 @@ class Scan:
     def __get_host_leaks(self, host):
         if self.__is_ip(host) == 'domain' and self.name not in host:
             mes = 'Most likely this domain is not associated with the target domain.'
-            return [(f'During the scan, the following domain was detected: {host}', mes)]
+            text = f'     {self.CYAN}During the scan, the following domain was detected: {host}\n     {mes}{self.WHITE}'
+            return [text]
         else:
-            try:
-                url = f'https://leakix.net/{self.__is_ip(host)}/{host}'
-                res = requests.get(url, headers=self.headers, verify=False)
-                soup = bs(res.text, "html.parser")
-                cards = soup.find_all(class_ = 'card')
-                results = []
-                for c in cards:
+            url = f'https://leakix.net/{self.__is_ip(host)}/{host}'
+            res = requests.get(url, headers=self.headers, verify=False)
+            soup = bs(res.text, "html.parser")
+            col = soup.find(class_ = 'col-xl-6')
+            main_card = col.find(class_ = 'card mb-3')
+            cards = main_card.find_all(class_ = 'card')
+            results = []
+            for c in cards:
+                try:
                     title = c.find(class_ = 'card-header bg-danger')
                     pre = c.find('pre')
-                    if (pre and self.name in pre.text):
-                        results.append((title.text.strip(), pre.text))
-                return set(results)
-            except:
-                pass
+                    pre_text = pre.text
+                    if pre_text:
+                        if not 'remote "origin"' in pre_text:
+                            pre_text = pre_text[:500] + '...'
+                        pre_line = [f'     {l}' for l in pre_text.split('\n') if l.strip()]
+                        pre_text = '\n'.join(pre_line)
+                        text = f'     {self.YELLOW}{title.text.strip()}{self.CYAN}\n{pre_text}'
+                        results.append(text)
+                except:
+                    pass
+            return set(results)
 
     def __leaks(self):
         hosts = self.__search_leakix()
         for host in hosts:
             mes = ''
-            for leak in self.__get_host_leaks(host):
-                title = leak[0]
-                f_lines = leak[1].split("\n")
-                text = "\n     ".join(f_lines)
-                mes += f'\n {self.CYAN} * {self.WHITE} '
-                mes += f'{title}\n'
-                mes += f'\n     {text}'
-            self.__print_test_result(f'Indexed Information  ::  {host}', mes)
+            try:
+                for leak in self.__get_host_leaks(host):
+                    mes += f'\n{leak}{self.WHITE}\n'
+                self.__print_test_result(f'Indexed Information  ::  {host}', mes)
+            except:
+                pass
     
     '''URL Scan'''
     def __get_historical_domain_data(self):
