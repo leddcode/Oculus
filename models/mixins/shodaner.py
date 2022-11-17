@@ -6,6 +6,7 @@ class Shodaner:
 
     def __shodan_ip_data(self, target):
         url = f'https://www.shodan.io/host/{target}'
+        print(self.YELLOW, f'<| Shodan Lookup: {url}', self.WHITE)
         res = requests.get(url, headers=self.headers)
         soup = bs(res.text, "html.parser")
         card_general = soup.find(class_ = 'card card-yellow card-padding')
@@ -19,8 +20,9 @@ class Shodaner:
             try:
                 card_general, ports, card_ports = self.__shodan_ip_data(target)
                 for i in range(len(ports)):
+                    card_lines = [f'    {self.CYAN}{l.strip()}' for l in card_ports[i].text.split('\n') if l]
                     print(self.GREEN, f'<+ Port: {ports[i].text}  ::  {target}:{ports[i].text}')
-                    print(self.CYAN, card_ports[i].text, self.WHITE)
+                    print('\n' + '\n'.join(card_lines[:7]) + '\n', self.WHITE)
                     self._write(f'<+ Port: {ports[i].text}  ::  {target}:{ports[i].text}\n', 'records')
                     self._write(f'{card_ports[i].text}\n', 'records')
             except:
