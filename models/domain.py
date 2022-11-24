@@ -49,6 +49,7 @@ class Domain(
         self.permutations = []
         self.chosen_options = []
         self.cert_subdomains = []
+        self.excluded_lengths = []
         self.response_length_list = []
         self.headers = self.__get_headers()
         super().__init__()
@@ -92,6 +93,13 @@ class Domain(
     def set_threads(self, threads):
         if threads:
             self.__apply_threads(threads)
+
+    def set_excluded_length(self, lengths):
+        if lengths:
+            try:
+                self.excluded_lengths = [l.strip() for l in lengths.split(',') if l]
+            except:
+                pass
 
     def stop_executor(self):
         try:

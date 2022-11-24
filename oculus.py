@@ -47,9 +47,11 @@ if __name__ == '__main__':
                 print('    Ex: 3,1,5')
 
         if [t for t in domain.chosen_options if t not in domain.TESTS_WITHOUT_THREADS]:
-            threads = input('\n    Threads  >_')
+            threads = input('    Threads          ::  ')
             domain.set_threads(threads)
-            domain.status_bar = input('\n    Status Bar (y/N) ::  ')
+            lengths = input('    Exclude lengths  ::  ')
+            domain.set_excluded_length(lengths)
+            domain.status_bar = input('    Status Bar (y/N) ::  ')
 
         print(f'    Request Timeout  ::  {domain.TIMEOUT}')
         print(f'    Protocol         ::  {domain.protocol}')

@@ -28,9 +28,9 @@ class Request:
 
         try:
             res = self._request(url)
-            if res.status_code not in self.BAD_CODES:
+            length = str(len(res.text))
+            if res.status_code not in self.BAD_CODES and length not in self.excluded_lengths:
                 status = self.colour_status(res.status_code)
-                length = len(res.text)
                 if length not in self.response_length_list:
                     self.response_length_list.append(length)
                     status = '' * 20
