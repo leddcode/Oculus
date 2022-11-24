@@ -5,6 +5,7 @@ Be easy and interactive ;)
 @author: leddcode
 """
 import random
+import sys
 
 import requests
 

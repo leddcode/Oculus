@@ -1,4 +1,5 @@
 import random
+import sys
 
 from concurrent.futures import FIRST_COMPLETED, wait
 
@@ -98,7 +99,7 @@ class Domain(
         if lengths:
             try:
                 self.excluded_lengths = [l.strip() for l in lengths.split(',') if l]
-            except:
+            except Exception:
                 pass
 
     def stop_executor(self):
@@ -107,8 +108,10 @@ class Domain(
             # self.executor._threads.clear()
             self.executor = '1337'
             [f.cancel() for f in self.futures]
+            sys.exit()
         except Exception:
-            print(f'\n\n\n')
+            '''Crash'''
+            sys.exit()
 
     def __set_parts(self):
         self.parts = self.name.split('.')
@@ -192,6 +195,8 @@ class Domain(
                 while self.futures:
                     done, self.futures = wait(
                         self.futures, return_when=FIRST_COMPLETED)
+            except KeyboardInterrupt:
+                self.stop_executor()
             except Exception as e:
                 print('Oops...', e)
             finally:
