@@ -33,7 +33,7 @@ class Request:
                 status = self.colour_status(res.status_code)
                 if length not in self.response_length_list:
                     self.response_length_list.append(length)
-                    status = '' * 20
+                    status = ''
 
                 if self.option == 5 and 'x-amz-bucket-region' in res.headers:
                     status = res.headers['x-amz-bucket-region']
@@ -43,9 +43,11 @@ class Request:
                 self._write(url, f'{res.status_code}{status}')
                 self.LOCK.acquire()
                 print(
-                    f' {self.colour_code(res.status_code, status)}<+  {res.status_code}  {length:<12}  {url:<50}  {status}{self.WHITE}'
+                    f'{self.CLEAR}       {self.colour_code(res.status_code, status)}C:{res.status_code}   L:{length:<10}  {url}{self.WHITE}'
                 )
                 self.LOCK.release()
+        except KeyboardInterrupt:
+            self.stop_executor()
         except Exception:
             '''Bad Request'''
 
@@ -53,11 +55,7 @@ class Request:
             progress = round(self.count_requests / total * 40)
             bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
             self.LOCK.acquire()
-            print(
-                f'\r <|  {bar:<40}  ::  {total} | {self.count_requests}',
-                ' ' * 30,
-                end='\r'
-            )
+            print(f'       {bar:<40}  ::  {self.count_requests} of {total}', end='\r')
             self.LOCK.release()
     
     def _check_futures(self):

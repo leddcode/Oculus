@@ -11,7 +11,7 @@ class Dir:
         return total
 
     def __search_with_extension(self, w, total):
-        if (self.extensions
+        if (w and self.extensions
             and '.' not in w
             and w[0].isalnum()
             and w[-1].isalnum()):
@@ -25,7 +25,7 @@ class Dir:
         with open(self.DIR_LIST, 'r', encoding='utf-8', errors='ignore') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
-                words = wl.read().splitlines()
+                words = [''] + wl.read().splitlines()
                 total = self.__get_total(words)
                 for w in words:
                     self.futures.append(self.executor.submit(
@@ -33,5 +33,5 @@ class Dir:
                     self.__search_with_extension(w, total)
 
     def _search_dirs(self):
-        print(f' <| Searching for {self.search_type}\n')
+        print(f"\n{self.p_warn('PROC')} Searching for {self.search_type}\n")
         self.__create_dir_pool()

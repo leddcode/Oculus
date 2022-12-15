@@ -6,11 +6,7 @@ import requests
 class Sub:
 
     def __crtsh_search(self):
-        print(
-            self.YELLOW,
-            '<| Certificate Search\n',
-            self.WHITE
-        )
+        print(f"{self.p_plain('PROC')} Certificate Search\n")
 
         url = f'https://crt.sh/?q=.{self.name}&output=json'
         for cert in requests.get(url).json():
@@ -18,25 +14,13 @@ class Sub:
                 if sd not in self.cert_subdomains and '*' not in sd:
                     self.cert_subdomains.append(sd)
                     self._write(sd, 'certificate_search')
-                    print(
-                        self.CYAN,
-                        f'<+  {sd}',
-                        self.WHITE
-                    )
+                    print(f'{self.CYAN}       {sd}{self.WHITE}')
 
         if not self.cert_subdomains:
-            print(
-                self.CYAN,
-                '<-  No results',
-                self.WHITE
-            )
+            print(f'{self.CYAN}       No results{self.WHITE}')
 
     def __create_sub_pool(self):
-        print(
-            self.YELLOW,
-            '\n <| Brute-Force\n',
-            self.WHITE
-        )
+        print(f"\n{self.p_warn('PROC')} Brute-Force\n")
         with open(self.SUB_LIST, 'r') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
@@ -51,6 +35,6 @@ class Sub:
                         self.count_requests += 1
 
     def _search_subs(self):
-        print(f' <| Searching for {self.search_type}\n')
+        print(f"\n{self.p_plain('PROC')} Searching for {self.search_type}")
         self.__crtsh_search()
         self.__create_sub_pool()

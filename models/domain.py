@@ -62,19 +62,13 @@ class Domain(
     
     def __get_additional_lookup_parameters(self, option):
         if option == 2:
-            print(
-                '\n    Pass file extensions separated with comma, or leave blank.')
-            print('    Ex: php,aspx')
-            extensions = input('    Extensions >_')
-            print()
+            print(f'       {self.YELLOW}Enter file extensions separated with comma, or leave blank (Ex: php,aspx){self.WHITE}')
+            extensions = input('       Extensions       ::  ')
             if extensions:
                 self.extensions = [ext.strip() for ext in extensions.split(",")]
         elif option in (5, 6, 7):
-            print(
-                '\n    Pass additional keywords separated with comma, or leave blank.')
-            print('    Ex: word1,word2,word3')
-            keywords = input('    Keywords >_')
-            print()
+            print(f'       {self.YELLOW}Enter additional keywords separated with comma, or leave blank (Ex: word1,word2,word3){self.WHITE}')
+            keywords = input('       Keywords         ::  ')
             if keywords:
                 self.keywords = [k.strip() for k in keywords.split(",")]
     
@@ -132,7 +126,7 @@ class Domain(
             if threads > 0:
                 self.threads = threads
         except Exception:
-            print('\n <- Bad input. Continue with default value.')
+            print(f'       Default Threads  ::  {self.threads}')
 
     def __connect_via_HTTP(self, url):
         try:
@@ -141,12 +135,12 @@ class Domain(
                 self.protocol = 'http'
                 self.port = 80
                 print(
-                    f' ==> {self.GREEN}HTTP{self.WHITE}')
+                    f'{self.GREEN}[HTTP]{self.WHITE}')
                 return url
             else:
                 ''' <- Bad Domain?!'''
         except Exception:
-            print(f' ==> {self.RED}HTTP{self.WHITE}')
+            print(f'{self.RED}[HTTP]{self.WHITE}')
             ''' <- Bad Domain?!'''
 
     def __normalize_url(self, url):
@@ -159,18 +153,18 @@ class Domain(
 
     def __check_url(self, url):
         url = self.__normalize_url(url)
-        print(' <| Checking host connection', end='')
+        print(f"{self.p_warn('PROC')} Connecting ", end='')
         try:
             res = self._request(f'https://{url}')
             if res.status_code not in (400, 404):
                 self.protocol = 'https'
                 print(
-                    f' ==> {self.GREEN}HTTPS{self.WHITE}')
+                    f'{self.GREEN}[HTTPS]{self.WHITE}')
                 return url
             else:
-                print(' <- Bad Domain?!')
+                print('       Bad Domain?!')
         except Exception:
-            print(f' ==> {self.RED} HTTPS{self.WHITE}', end='')
+            print(f'{self.RED}[HTTPS]{self.WHITE}', end='')
             return self.__connect_via_HTTP(url)
 
     def search(self):
@@ -198,7 +192,7 @@ class Domain(
             except KeyboardInterrupt:
                 self.stop_executor()
             except Exception as e:
-                print('Oops...', e)
+                print(f'{self.CLEAR}{self.p_fail("OOPS")} {e}')
             finally:
                 self.futures = []
                 self.permutations = []

@@ -20,9 +20,9 @@ class Env:
                     parts = self.parts[:]
 
     def __create_env_pool(self):
-        print(' <| Creating possible urls')
+        print(f"\n{self.p_warn('PROC')} Creating possible urls")
         self.__permutate_env_urls()
-        print(f' <| Searching for {self.search_type}\n')
+        print(f"{self.p_warn('PROC')} Searching for {self.search_type}\n")
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             total = len(self.permutations)

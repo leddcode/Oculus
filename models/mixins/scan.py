@@ -372,7 +372,7 @@ class Scan:
     '''Full Scan'''
     def _scan(self, url):
         self.url_to_analize = url
-        print(f'{self.YELLOW} <|  {self.search_type}{self.WHITE}  [{self.url_to_analize}]\n')
+        print(f"\n{self.p_warn('PROC')} {self.search_type}{self.WHITE}  [{self.url_to_analize}]")
         self._write(f'{self.search_type}  [{self.url_to_analize}]\n', 'Vulnerability Scan')
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
@@ -384,7 +384,7 @@ class Scan:
         self._check_futures()
         
         # IP Scan
-        to_scan_ports = input(f'\n {self.YELLOW}<|  Scan for open ports?{self.WHITE} (y/N)  ')
+        to_scan_ports = input(f"\n{self.p_warn('INIT')} Scan for open ports?{self.WHITE} (y/N)  ")
         if to_scan_ports == 'y':
             host_ip = self.__get_host_ip()
             ip_scan_banner = f'{self.name}  ::  {host_ip}'

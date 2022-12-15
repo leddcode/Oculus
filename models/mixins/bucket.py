@@ -13,9 +13,7 @@ class Bucket:
         keywords = [
             w for w in self.name.split('.')[:-1] if len(w) > 3
         ] + self.keywords
-        print(
-            f' <| Keywords: {self.GREEN}{",".join(keywords)}{self.WHITE}\n'
-        )
+        print(f" with following keywords: {self.GREEN}{', '.join(keywords)}{self.WHITE}")
         if len(keywords) > 1:
             combs = combinations(keywords, 2)
             for comb in combs:
@@ -91,28 +89,25 @@ class Bucket:
         for result in results:
             self.count_requests += 1
             if result:
-                print(
-                    f'{self.CYAN} <+  {result[0]}  {result[1]} {" " * 30}{self.WHITE}')
+                print(f'{self.CYAN}       {result[0]}  {result[1]} {" " * 30}{self.WHITE}')
             if self.status_bar in ('y', 'Y', 'yes', 'Yes', 'go', 'sure', 'wtf'):
                 progress = round(self.count_requests / total * 40)
                 bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
-                print(
-                    f'\r <|  {bar:<40}  ::  {total} | {self.count_requests}',
-                    ' ' * 30,
-                    end='\r'
-                )
+                self.LOCK.acquire()
+                print(f'       {bar:<40}  ::  {self.count_requests} of {total}', end='\r')
+                self.LOCK.release()
 
         self.count_requests = 0
 
     def __azure_pool(self):
-        print(' <| Blobs\n')
+        print(f"\n{self.p_warn('PROC')} Blobs Lookup")
         self.__azure_blob_pool()
         if self.azure_targets:
-            print('\n\n <| Containers\n')
+            print(f"\n{self.p_warn('PROC')} Containers Lookup")
             self.__permutate_blob_containers()
             self.__cloud_pool()
         else:
-            print(' <- No Blobs\n')
+            print(f"{self.p_plain('~~~~')} No Blobs")
 
     '''Firebase'''
 
@@ -150,9 +145,9 @@ class Bucket:
             self.__permutate_firebase_urls()
 
     def __create_cloud_pool(self):
-        print(' <| Building permutations\n')
+        print(f"\n{self.p_warn('PROC')} Building permutations", end='')
         self.__permutate_cloud_urls()
-        print(f' <| Searching for {self.search_type}\n')
+        print(f"{self.p_warn('PROC')} Searching for {self.search_type}")
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             if self.option in (5, 7):

@@ -1,21 +1,19 @@
 from models.mixins.colour import Colour
 
-search_types = '''
- <: Enumeration Options
-    -----------------------------------------------
-    1. Environments Discovery
-    2. Directories Discovery
-    3. Subdomains Discovery
-    4. Mail Server DNS records and Emails Discovery
-    5. S3 Buckets
-    6. Azure Blob Containers
-    7. Firebase Databases
-    8. General Information and Misconfigurations
-    ________________________________________________
+search_types = f'''{Colour.p_warn(Colour, 'INIT')} Enumeration Options                
+       -------------------
+       1 Environments Discovery                      
+       2 Directories Discovery                       
+       3 Subdomains Discovery                        
+       4 Mail Server DNS records and Emails Discovery
+       5 S3 Buckets                                  
+       6 Azure Blob Containers                       
+       7 Firebase Databases                          
+       8 General Information and Misconfigurations   
 '''
 
-version = 'v1.2.18'
-credit = 'By @leddcode'
+version = 'v1.2.19'
+credit = ''
 
 banner_digital = '''
 +-+-+-+-+-+-+
@@ -23,31 +21,20 @@ banner_digital = '''
 +-+-+-+-+-+-+
 '''
 
-banner_speed = f'''
-                _______             ______
-                __  __ \_________  ____  /___  _________
-                _  / / /  ___/  / / /_  /_  / / /_  ___/
-                / /_/ // /__ / /_/ /_  / / /_/ /_(__  )
-                \____/ \___/ \__,_/ /_/  \__,_/ /____/
-
-                {version}
-                {credit}'''
-
-
-banner_bloody = f'''{Colour.RED}
-
-           ▒█████   ▄████▄   █    ██  ██▓     █    ██   ██████ 
-          ▒██▒  ██▒▒██▀ ▀█   ██  ▓██▒▓██▒     ██  ▓██▒▒██    ▒ 
-          ▒██░  ██▒▒▓█    ▄ ▓██  ▒██░▒██░    ▓██  ▒██░░ ▓██▄   
-          ▒██   ██░▒▓▓▄ ▄██▒▓▓█  ░██░▒██░    ▓▓█  ░██░  ▒   ██▒
-          ░ ████▓▒░▒ ▓███▀ ░▒▒█████▓ ░██████▒▒▒█████▓ ▒██████▒▒
-          ░ ▒░▒░▒░ ░ ░▒ ▒  ░░▒▓▒ ▒ ▒ ░ ▒░▓  ░░▒▓▒ ▒ ▒ ▒ ▒▓▒ ▒ ░
-            ░ ▒ ▒░   ░  ▒   ░░▒░ ░ ░ ░ ░ ▒  ░░░▒░ ░ ░ ░ ░▒  ░ ░
-          ░ ░ ░ ▒  ░         ░░░ ░ ░   ░ ░    ░░░ ░ ░ ░  ░  ░  
-              ░ ░  ░ ░         ░         ░  ░   ░           ░  
-                   ░ {Colour.WHITE}                              
-          {version}
-          {credit}'''
+banner_speed = f''' {Colour.ORANGE}
+* * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                   *
+*      _______             ______      {version}      *
+*      __  __ \_________  ____  /___  _________     *
+*      _  / / /  ___/  / / / / /_  / / /_  ___/     *
+*      / /_/ // /__ / /_/ / / / / /_/ /_(__  )      *
+*      \____/ \___/ \__,_/ /_/  \__,_/ /____/       *
+*                                                   *
+*      Domain OSINT                                 *
+*      By @leddcode                                 *
+*                                                   *
+* * * * * * * * * * * * * * * * * * * * * * * * * * *
+{Colour.WHITE}'''
 
 banner_ansi = f'''{Colour.GREEN}
 
@@ -66,4 +53,4 @@ solid_line = '''
 _________________________________________________________________________
 '''
 
-banners = [banner_speed, banner_bloody, banner_ansi]
+banners = [banner_speed]

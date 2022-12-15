@@ -12,9 +12,11 @@ class Colour:
     YELLOW = '\033[93m'
     RED = '\033[91m'
     BOLD = '\033[1m'
+    NONBOLD = '\033[0m'
     UNDERLINE = '\033[4m'
     WHITE = '\033[0m'
     ORANGE = '\033[33m'
+    CLEAR = '\033[K'
 
     if sys.platform.startswith('win'):
         try:
@@ -28,14 +30,16 @@ class Colour:
             YELLOW = ''
             RED = ''
             BOLD = ''
+            NONBOLD = ''
             UNDERLINE = ''
             WHITE = ''
             ORANGE = ''
+            CLEAR = ''
 
     EXCEPT_CODES = (401, 403, 409)
 
     def colour_code(self, code, status):
-        if status == 'Possible false positive!':
+        if status == 'possible false positive':
             return Colour.RED
         elif code in Colour.EXCEPT_CODES:
             return Colour.DARKCYAN
@@ -43,5 +47,20 @@ class Colour:
 
     def colour_status(self, code):
         if code not in Colour.EXCEPT_CODES:
-            return 'Possible false positive!'
-        return '' * 20
+            return 'possible false positive'
+        return ''
+    
+    def p_plain(self, s):
+        return f"{self.BOLD}{self.WHITE}[{s}]{self.WHITE}{self.NONBOLD}"
+    
+    def p_info(self, s):
+        return f"{self.BOLD}{self.BLUE}[{s}]{self.WHITE}{self.NONBOLD}"
+    
+    def p_warn(self, s):
+        return f"{self.BOLD}{self.YELLOW}[{s}]{self.WHITE}{self.NONBOLD}"
+    
+    def p_fail(self, s):
+        return f"{self.BOLD}{self.RED}[{s}]{self.WHITE}{self.NONBOLD}"
+    
+    def p_succ(self, s):
+        return f"{self.BOLD}{self.GREEN}[{s}]{self.WHITE}{self.NONBOLD}"
