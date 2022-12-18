@@ -100,10 +100,10 @@ class Bucket:
         self.count_requests = 0
 
     def __azure_pool(self):
-        print(f"\n{self.p_warn('PROC')} Blobs Lookup")
+        print(f"\n{self.p_cyan('PROC')} Blobs Lookup")
         self.__azure_blob_pool()
         if self.azure_targets:
-            print(f"\n{self.p_warn('PROC')} Containers Lookup")
+            print(f"\n{self.p_cyan('PROC')} Containers Lookup")
             self.__permutate_blob_containers()
             self.__cloud_pool()
         else:
@@ -145,9 +145,9 @@ class Bucket:
             self.__permutate_firebase_urls()
 
     def __create_cloud_pool(self):
-        print(f"\n{self.p_warn('PROC')} Building permutations", end='')
+        print(f"\n{self.p_cyan('PROC')} Building permutations", end='')
         self.__permutate_cloud_urls()
-        print(f"{self.p_warn('PROC')} Searching for {self.search_type}")
+        print(f"{self.p_cyan('PROC')} Searching for {self.search_type}")
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             if self.option in (5, 7):

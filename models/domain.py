@@ -153,7 +153,7 @@ class Domain(
 
     def __check_url(self, url):
         url = self.__normalize_url(url)
-        print(f"{self.p_warn('PROC')} Connecting ", end='')
+        print(f"{self.p_cyan('PROC')} Connecting ", end='')
         try:
             res = self._request(f'https://{url}')
             if res.status_code not in (400, 404):

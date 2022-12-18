@@ -80,7 +80,7 @@ class Mx:
             print(f"{self.p_fail('SPF~~')} Record not published")
 
     def check_records(self):
-        print(f"\n{self.p_warn('PROC~')} Mail Server Records")
+        print(f"\n{self.p_cyan('PROC~')} Mail Server Records")
         ips = self.__get_mx_data()
         self.__get_dkim_record()
         self.__get_dmarc_record()

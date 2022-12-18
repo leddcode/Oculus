@@ -33,5 +33,5 @@ class Dir:
                     self.__search_with_extension(w, total)
 
     def _search_dirs(self):
-        print(f"\n{self.p_warn('PROC')} Searching for {self.search_type}\n")
+        print(f"\n{self.p_cyan('PROC')} Searching for {self.search_type}\n")
         self.__create_dir_pool()

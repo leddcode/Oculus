@@ -6,7 +6,7 @@ import requests
 class Sub:
 
     def __crtsh_search(self):
-        print(f"{self.p_plain('PROC')} Certificate Search\n")
+        print(f"{self.p_cyan('PROC')} Certificate Search\n")
 
         url = f'https://crt.sh/?q=.{self.name}&output=json'
         for cert in requests.get(url).json():
@@ -20,7 +20,7 @@ class Sub:
             print(f'{self.CYAN}       No results{self.WHITE}')
 
     def __create_sub_pool(self):
-        print(f"\n{self.p_warn('PROC')} Brute-Force\n")
+        print(f"\n{self.p_cyan('PROC')} Brute-Force\n")
         with open(self.SUB_LIST, 'r') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
@@ -35,6 +35,6 @@ class Sub:
                         self.count_requests += 1
 
     def _search_subs(self):
-        print(f"\n{self.p_plain('PROC')} Searching for {self.search_type}")
+        print(f"\n{self.p_cyan('PROC')} Searching for {self.search_type}")
         self.__crtsh_search()
         self.__create_sub_pool()

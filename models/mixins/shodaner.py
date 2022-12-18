@@ -6,7 +6,7 @@ class Shodaner:
 
     def __shodan_ip_data(self, target):
         url = f'https://www.shodan.io/host/{target}'
-        print(f"\n{self.p_warn('PROC')} Shodan Lookup: {url}")
+        print(f"\n{self.p_cyan('PROC')} Shodan Lookup: {url}")
         res = requests.get(url, headers=self.headers)
         soup = bs(res.text, "html.parser")
         card_general = soup.find(class_ = 'card card-yellow card-padding')

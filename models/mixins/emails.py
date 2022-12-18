@@ -11,7 +11,7 @@ class Email:
     }
 
     def __intelx_search(self):
-        print(f"\n{self.p_warn('PROC')} Leaked Emails Lookup")
+        print(f"\n{self.p_cyan('PROC')} Leaked Emails Lookup")
         emails = requests.get(
             f'{self.URL}/emails/{self.name}',
             cookies=self.COOKIES).json()[self.name]

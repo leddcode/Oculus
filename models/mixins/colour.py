@@ -53,6 +53,9 @@ class Colour:
     def p_plain(self, s):
         return f"{self.BOLD}{self.WHITE}[{s}]{self.WHITE}{self.NONBOLD}"
     
+    def p_cyan(self, s):
+        return f"{self.BOLD}{self.CYAN}[{s}]{self.WHITE}{self.NONBOLD}"
+    
     def p_info(self, s):
         return f"{self.BOLD}{self.BLUE}[{s}]{self.WHITE}{self.NONBOLD}"
     

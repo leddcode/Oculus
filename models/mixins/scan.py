@@ -373,7 +373,7 @@ class Scan:
     '''Full Scan'''
     def _scan(self, url):
         self.url_to_analize = url
-        print(f"\n{self.p_warn('PROC')} {self.search_type}  [{self.url_to_analize}]")
+        print(f"\n{self.p_cyan('PROC')} {self.search_type}  [{self.url_to_analize}]")
         self._write(f'{self.search_type}  [{self.url_to_analize}]\n', 'Vulnerability Scan')
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
