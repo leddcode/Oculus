@@ -259,7 +259,7 @@ class Scan:
                             text += f'{" " * (20 - len(k))}| {v}\n{"-" * 50}\n'
                         else:
                             for entry in v:
-                                text += f'\n{" " * 25}| {entry}'
+                                text += f'\n{" " * 20}| {entry}'
                             text += f'\n{"-" * 50}\n'
                 mes += text
                         
