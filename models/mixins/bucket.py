@@ -103,11 +103,11 @@ class Bucket:
         print(f"\n{self.p_cyan('PROC')} Blobs Lookup")
         self.__azure_blob_pool()
         if self.azure_targets:
-            print(f"\n{self.p_cyan('PROC')} Containers Lookup")
+            print(f"{self.CLEAR}\n{self.p_cyan('PROC')} Containers Lookup")
             self.__permutate_blob_containers()
             self.__cloud_pool()
         else:
-            print(f"{self.p_plain('~~~~')} No Blobs")
+            print(f"{self.CLEAR}{self.p_plain('~~~~')} No Blobs")
 
     '''Firebase'''
 
