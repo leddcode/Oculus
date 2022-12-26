@@ -254,13 +254,13 @@ class Scan:
                 text = f'\n\n{"=" * 50}\n'
                 for k, v in domain_data.items():
                     if v:
-                        text += k
+                        text += f'{self.CYAN}{k}{self.WHITE}'
                         if isinstance(v, str):
-                            text += f'{" " * (20 - len(k))}| {v}\n{"-" * 50}\n'
+                            text += f'{" " * (20 - len(k))}{v}\n'
                         else:
                             for entry in v:
-                                text += f'\n{" " * 20}| {entry}'
-                            text += f'\n{"-" * 50}\n'
+                                text += f'\n{" " * 20}{entry}'
+                            text += '\n'
                 mes += text
                         
             self.__print_test_result('URL Scan', mes)
@@ -331,7 +331,6 @@ class Scan:
             self.LOCK.acquire()
             if test_name:
                 print(f"\n{self.p_warn('WARN')} {test_name}")
-                # print(f'\n {self.YELLOW}<|  {test_name}{self.WHITE}')
             print(test_res)
             self.LOCK.release()
             self._write(test_res, 'Vulnerability Scan')
