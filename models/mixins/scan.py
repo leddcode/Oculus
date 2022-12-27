@@ -278,26 +278,26 @@ class Scan:
         self.LOCK.acquire()
         print(f'{self.CLEAR}       TCP {port}', end='\r' )
         self.LOCK.release()
+        output = ''
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(2)
+            s.settimeout(5)
             result = s.connect_ex((host_ip, port))
             if result == 0:
-                output = f"{self.p_succ('OPEN')} TCP {port}"
-                banner = s.recv(1024)
-                if not banner:
-                    banner = ''
-                else:
-                    banner = banner.decode().replace('\n', '\n' + ' ' * 7).strip()
-                    banner = f'\n       {self.CYAN}{banner}{self.WHITE}\n'
-                self.LOCK.acquire()
-                print(f'{output}{banner}')
-                self.LOCK.release()
-                self._write(f'{output}{banner}', 'Vulnerability Scan')
+                output = f"{self.p_succ('OPEN')} TCP {port}      "
                 self.ports_open += 1
+                banner = s.recv(1024).decode()
+                if banner:
+                    banner = banner.replace('\n', '\n' + ' ' * 7).strip()
+                    output += f'\n       {self.CYAN}{banner}{self.WHITE}\n'
             s.close()
         except:
             pass
+        if output:
+            self.LOCK.acquire()
+            print(output)
+            self.LOCK.release()
+            self._write(output, 'Vulnerability Scan')
 
     def __udp_scan_port(self, host_ip, port, m='0c'):
         self.LOCK.acquire()
@@ -305,7 +305,7 @@ class Scan:
         self.LOCK.release()
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.settimeout(0.2)
+            s.settimeout(0.5)
             s.sendto(m.encode(), (host_ip, port))
             o = (s.recvfrom(1024))
             self.LOCK.acquire()
