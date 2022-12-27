@@ -98,6 +98,11 @@ class Scan:
                 res += cres
             return res
     
+    '''Generators from Meta tags'''
+    def __extract_generators(self):
+        generators = self.res_soup.find_all('meta', {'name': 'generator'})
+        if generators:
+            return f'\n{self.p_info("INFO")} {self.YELLOW}Generators:{self.WHITE} {", ".join(g["content"] for g in generators)}'
 
     '''GraphQL'''
     def __to_pretty_json(self, dic):
@@ -339,6 +344,7 @@ class Scan:
     def __analize_response(self):
         self.server_response = self._request(self.url_to_analize)
         self.res_headers = self.server_response.headers
+        self.res_soup = bs(self.server_response.text, "html.parser")
 
         # Headers
         self.__print_test_result(
@@ -350,6 +356,9 @@ class Scan:
         self.__print_test_result(
             None,
             self.__is_asp_net_header_set())
+        self.__print_test_result(
+            None,
+            self.__extract_generators())
         self.__print_test_result(
             'X-Content-Type-Options',
             self.__is_misconfigured_content_type())
@@ -377,8 +386,8 @@ class Scan:
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             self.futures.append(self.executor.submit(self.__test_graphql))
-            self.futures.append(self.executor.submit(self.__print_domain_data))
             self.futures.append(self.executor.submit(self.__analize_response))
+            self.futures.append(self.executor.submit(self.__print_domain_data))
             self.futures.append(self.executor.submit(self.__leaks))
             self.futures.append(self.executor.submit(self.__robots_txt))
         self._check_futures()
