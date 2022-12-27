@@ -281,25 +281,21 @@ class Scan:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(2)
-            s.connect((host_ip, port))
-            try:
-                banner = s.recv(1024).decode()
-                if not banner:
-                    banner = '??'
+            result = s.connect_ex((host_ip, port))
+            if result == 0:
                 output = f"{self.p_succ('OPEN')} TCP {port}"
-                banner = banner.replace('\n', '\n' + ' ' * 7).strip()
+                banner = s.recv(1024)
+                if not banner:
+                    banner = ''
+                else:
+                    banner = banner.decode().replace('\n', '\n' + ' ' * 7).strip()
+                    banner = f'\n       {self.CYAN}{banner}{self.WHITE}\n'
                 self.LOCK.acquire()
-                print(f'{output}\n       {self.CYAN}{banner}{self.WHITE}\n')
+                print(f'{output}{banner}')
                 self.LOCK.release()
-                self._write(f'{output}\n       {banner}\n', 'Vulnerability Scan')
-            except:
-                self.LOCK.acquire()
-                print(f"{self.p_succ('OPEN')} TCP {port}  ")
-                self.LOCK.release()
-                self._write(f"{self.p_succ('OPEN')} TCP {port}  ", 'Vulnerability Scan')
-            finally:
+                self._write(f'{output}{banner}', 'Vulnerability Scan')
                 self.ports_open += 1
-                s.close()
+            s.close()
         except:
             pass
 
