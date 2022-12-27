@@ -37,64 +37,64 @@ class Scan:
 
     def __is_server_header_set(self):
         if 'Server' in self.res_headers:
-            return f'\n{self.p_info("INFO")} {self.YELLOW}Server:{self.WHITE} {self.res_headers["Server"]}'
+            return f'{self.PURPLE}Server:{self.WHITE} {self.res_headers["Server"]}'
 
     def __is_x_powered_by_header_set(self):
         if 'X-Powered-By' in self.res_headers:
-            return f'\n{self.p_info("INFO")} {self.YELLOW}X-Powered-By:{self.WHITE} {self.res_headers["X-Powered-By"]}'
+            return f'{self.PURPLE}X-Powered-By:{self.WHITE} {self.res_headers["X-Powered-By"]}'
 
     def __is_asp_net_header_set(self):
         if 'X-AspNet-Version' in self.res_headers:
-            return f'\n{self.p_info("INFO")} {self.YELLOW}Asp.Net Version:{self.WHITE} {self.res_headers["X-AspNet-Version"]}'
+            return f'{self.PURPLE}Asp.Net Version:{self.WHITE} {self.res_headers["X-AspNet-Version"]}'
 
     def __is_misconfigured_content_type(self):
         if 'X-Content-Type-Options' not in self.res_headers:
-            return f'       {self.RED}X-Content-Type-Options header is not set.{self.WHITE}'
+            return 'X-Content-Type-Options header is not set.'
         elif self.res_headers['X-Content-Type-Options'] != 'nosniff':
-            return f'       {self.RED}X-Content-Type-Options header is misconfigured and set to: {self.res_headers["X-Content-Type-Options"]}{self.WHITE}'
+            return f'X-Content-Type-Options header is misconfigured and set to: {self.res_headers["X-Content-Type-Options"]}'
 
     def __is_misconfigured_hsts(self):
         if 'Strict-Transport-Security' not in self.res_headers:
-            return f'       {self.RED}Strict-Transport-Security header is not set.{self.WHITE}'
-        res = ''
+            return 'Strict-Transport-Security header is not set.'
+        res = 'Strict-Transport-Security: '
         if 'max-age=31536000' not in self.res_headers['Strict-Transport-Security']:
-            res += f'       {self.RED}Strict-Transport-Security header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}\n{self.WHITE}'
+            res += f'header is misconfigured and set to: {self.res_headers["Strict-Transport-Security"]}, '
         if 'includesubdomains' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f'       {self.RED}includeSubDomains directive is not set.\n{self.WHITE}'
+            res += f'{self.RED}includeSubDomains{self.WHITE} directive is not set, '
         if 'preload' not in self.res_headers['Strict-Transport-Security'].lower():
-            res += f'       {self.RED}Preload directive is not set.\n{self.WHITE}'
+            res += f'{self.RED}Preload{self.WHITE} directive is not set'
         if res:
             return f'{res}'
 
     def __is_misconfigured_xxss(self):
         if 'X-XSS-Protection' not in self.res_headers:
-            return f'       {self.RED}X-XSS-Protection header is not set.{self.WHITE}'
+            return 'X-XSS-Protection header is not set.'
         elif '1; mode=block' not in self.res_headers['X-XSS-Protection']:
-            return f'       {self.RED}X-XSS-Protection header is misconfigured and set to: {self.res_headers["X-XSS-Protection"]}{self.WHITE}'
+            return f'X-XSS-Protection header is misconfigured and set to: {self.res_headers["X-XSS-Protection"]}'
 
     def __is_misconfigured_xframe(self):
         if 'X-Frame-Options' not in self.res_headers:
-            return f'       {self.RED}X-Frame-Options header is not set.{self.WHITE}'
+            return 'X-Frame-Options header is not set.'
         elif self.res_headers['X-Frame-Options'].lower() not in ('sameorigin', 'deny') :
-            return f'       {self.RED}X-Frame-Options header is misconfigured and set to: {self.res_headers["X-Frame-Options"]}{self.WHITE}'
+            return f'X-Frame-Options header is misconfigured and set to: {self.res_headers["X-Frame-Options"]}'
 
     def __is_misconfigured_csp(self):
         if 'Content-Security-Policy' not in self.res_headers:
-            return f'       {self.RED}CSP protection is not implemented.{self.WHITE}'
-        return f'       {self.GREEN}{self.res_headers["Content-Security-Policy"]}'
+            return f'CSP protection is not implemented.'
+        return f'{self.GREEN}CSP{self.WHITE}: {self.res_headers["Content-Security-Policy"]}'
 
     def __are_cookies_configured(self):
         if 'set-cookie' in self.res_headers:
             cookies = self.res_headers['set-cookie'].split(',')
             res = ''
             for c in cookies:
-                cres = f'\n       {self.BLUE}# {c.strip()}{self.WHITE}\n'
+                cres = f'\n       {self.CYAN}# {c.strip()}{self.WHITE}\n'
                 if 'HttpOnly' not in c:
-                    cres += f'       {self.RED}The "HttpOnly" flag is not set.{self.WHITE}\n'
+                    cres += '       The "HttpOnly" flag is not set.\n'
                 if 'Secure' not in c:
-                    cres += f'       {self.RED}The "Secure" flag is not set.{self.WHITE}\n'
+                    cres += '       The "Secure" flag is not set.\n'
                 if 'SameSite=None' in c:
-                    cres += f'       {self.RED}The "SameSite" property is set to "None".{self.WHITE}\n'
+                    cres += '       The "SameSite" property is set to "None".'
                 res += cres
             return res
     
@@ -102,7 +102,7 @@ class Scan:
     def __extract_generators(self):
         generators = self.res_soup.find_all('meta', {'name': 'generator'})
         if generators:
-            return f'\n{self.p_info("INFO")} {self.YELLOW}Generators:{self.WHITE} {", ".join(g["content"] for g in generators)}'
+            return f'{self.PURPLE}Generators:{self.WHITE} {", ".join(g["content"] for g in generators)}'
 
     '''GraphQL'''
     def __to_pretty_json(self, dic):
@@ -123,13 +123,13 @@ class Scan:
             try:
                 schema = self.__get_graphql_schema(gep)
                 if schema:
-                    self.__print_test_result('GraphQL API', f'\n{schema}')
+                    self.__print_test_result('GraphQL API', f'\n{schema}', 'warn')
                     return 
             except Exception:
                 pass
     
     '''Robots.txt'''
-    def __robots_txt(self, mes='\n       Not found.'):
+    def __robots_txt(self, output=''):
         res = requests.get(
             self.url_to_analize + '/robots.txt', headers=self.headers, verify=False)
         if res.status_code == 200 and 'allow' in res.text.lower():
@@ -139,8 +139,9 @@ class Scan:
             text = text.replace('User-agent:', f'{self.CYAN}User-agent:{self.WHITE}')
             text = text.replace('User-Agent:', f'{self.CYAN}User-Agent:{self.WHITE}')
             text = text.replace('Disallow:', f'{self.RED}Disallow:  {self.WHITE}')
-            mes = '\n       ' + text.replace('Allow:', f'{self.GREEN}Allow:     {self.WHITE}')
-        self.__print_test_result('Robots.txt', mes)
+            output = '\n       ' + text.replace('Allow:', f'{self.GREEN}Allow:     {self.WHITE}') + '\n'
+        if output:
+            self.__print_test_result('Robots.txt', output, 'info')
     
     '''Leaks Beta'''
     def __search_leakix(self):
@@ -197,7 +198,7 @@ class Scan:
             try:
                 for leak in self.__get_host_leaks(host):
                     mes += f'\n{leak}{self.WHITE}\n'
-                self.__print_test_result(f'Indexed Information  ::  {host}', mes)
+                self.__print_test_result(f'Indexed Information  ::  {host}', mes, 'info')
             except:
                 pass
     
@@ -256,7 +257,7 @@ class Scan:
         if results:
             mes = ''
             for domain_data in results.values():
-                text = f'\n\n{"=" * 50}\n'
+                text = f'\n{"〰️" * 18}\n'
                 for k, v in domain_data.items():
                     if v:
                         text += f'{self.CYAN}{k}{self.WHITE}'
@@ -267,8 +268,7 @@ class Scan:
                                 text += f'\n{" " * 20}{entry}'
                             text += '\n'
                 mes += text
-                        
-            self.__print_test_result('URL Scan', mes)
+            self.__print_test_result('URL Scan', mes, 'info')
     
     '''IP Scanner'''
     def __get_host_ip(self):
@@ -276,7 +276,7 @@ class Scan:
 
     def __tcp_scan_port(self, host_ip, port):
         self.LOCK.acquire()
-        print(f'\r       TCP {port}', ' ' * 10, end='\r' )
+        print(f'{self.CLEAR}       TCP {port}', end='\r' )
         self.LOCK.release()
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -286,12 +286,12 @@ class Scan:
                 banner = s.recv(1024).decode()
                 if not banner:
                     banner = '??'
+                output = f"{self.p_succ('OPEN')} TCP {port}"
+                banner = banner.replace('\n', '\n' + ' ' * 7).strip()
                 self.LOCK.acquire()
-                print(f"{self.p_succ('OPEN')} TCP {port}  //  {banner.replace('/n', '|').strip()}")
+                print(f'{output}\n       {self.CYAN}{banner}{self.WHITE}\n')
                 self.LOCK.release()
-                self._write(
-                    f"{self.p_succ('OPEN')} TCP {port}  //  {banner.replace('/n', '|').strip()}",
-                    'Vulnerability Scan')
+                self._write(f'{output}\n       {banner}\n', 'Vulnerability Scan')
             except:
                 self.LOCK.acquire()
                 print(f"{self.p_succ('OPEN')} TCP {port}  ")
@@ -305,7 +305,7 @@ class Scan:
 
     def __udp_scan_port(self, host_ip, port, m='0c'):
         self.LOCK.acquire()
-        print(f'\r       UDP {port}  ', ' ' * 10, end='\r' )
+        print(f'{self.CLEAR}       UDP {port}', end='\r' )
         self.LOCK.release()
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -331,12 +331,16 @@ class Scan:
                     self.__udp_scan_port, host_ip, port))
     
     '''Print results'''
-    def __print_test_result(self, test_name, test_res):
+    def __print_test_result(self, test_name, test_res, etype=None):
         if test_res:
             self.LOCK.acquire()
-            if test_name:
-                print(f"\n{self.p_warn('WARN')} {test_name}")
-            print(test_res)
+            test_name = test_name + '\n' if test_name else ''
+            if etype == 'info':
+                print(f"{self.p_info('INFO')} {test_name}{test_res}")
+            elif etype == 'warn':
+                print(f"{self.p_warn('WARN')} {test_name}{test_res}")
+            else:
+                print(f"{self.p_plain('~~~~')} {test_name}{test_res}")
             self.LOCK.release()
             self._write(test_res, 'Vulnerability Scan')
 
@@ -349,34 +353,44 @@ class Scan:
         # Headers
         self.__print_test_result(
             None,
-            self.__is_server_header_set())
+            self.__is_server_header_set(),
+            'info')
         self.__print_test_result(
             None,
-            self.__is_x_powered_by_header_set())
+            self.__is_x_powered_by_header_set(),
+            'info')
         self.__print_test_result(
             None,
-            self.__is_asp_net_header_set())
+            self.__is_asp_net_header_set(),
+            'info')
         self.__print_test_result(
             None,
-            self.__extract_generators())
+            self.__extract_generators(),
+            'info')
         self.__print_test_result(
-            'X-Content-Type-Options',
-            self.__is_misconfigured_content_type())
+            None,
+            self.__is_misconfigured_content_type(),
+            'warn')
         self.__print_test_result(
-            'Strict-Transport-Security',
-            self.__is_misconfigured_hsts())
+            None,
+            self.__is_misconfigured_hsts(),
+            'warn')
         self.__print_test_result(
-            'X-XSS-Protection',
-            self.__is_misconfigured_xxss())
+            None,
+            self.__is_misconfigured_xxss(),
+            'warn')
         self.__print_test_result(
-            'X-Frame-Options',
-            self.__is_misconfigured_xframe())
+            None,
+            self.__is_misconfigured_xframe(),
+            'warn')
         self.__print_test_result(
-            'CSP',
-            self.__is_misconfigured_csp())
+            None,
+            self.__is_misconfigured_csp(),
+            'warn')
         self.__print_test_result(
             'Cookies',
-            self.__are_cookies_configured())
+            self.__are_cookies_configured(),
+            'warn')
 
     '''Full Scan'''
     def _scan(self, url):
@@ -397,8 +411,6 @@ class Scan:
         if to_scan_ports == 'y':
             host_ip = self.__get_host_ip()
             ip_scan_banner = f'{self.name}  ::  {host_ip}'
-            self.__print_test_result(
-                'IP Scan', f'       {"-" * len(ip_scan_banner)}\n       {ip_scan_banner}')
-            print(f'       {"-" * len(ip_scan_banner)}')
+            print(f'       {"-" * len(ip_scan_banner)}\n       {ip_scan_banner}\n       {"-" * len(ip_scan_banner)}')
             self.__ip_scanner(host_ip)
             self._check_futures()

@@ -17,6 +17,8 @@ class Colour:
     WHITE = '\033[0m'
     ORANGE = '\033[33m'
     CLEAR = '\033[K'
+    BG_LIGHTGREY = '\033[47m'
+    BG_BLACK = '\033[40m'
 
     if sys.platform.startswith('win'):
         try:
@@ -35,6 +37,8 @@ class Colour:
             WHITE = ''
             ORANGE = ''
             CLEAR = ''
+            BG_LIGHTGREY = ''
+            BG_BLACK = ''
 
     EXCEPT_CODES = (401, 403, 409)
 
