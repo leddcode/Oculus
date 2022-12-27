@@ -5,6 +5,7 @@
 #  4. Add: self.name = ip
 from concurrent.futures import ThreadPoolExecutor
 import json
+import re
 import socket
 from threading import Lock
 from urllib3.exceptions import InsecureRequestWarning
@@ -97,6 +98,15 @@ class Scan:
                     cres += '       The "SameSite" property is set to "None".'
                 res += cres
             return res
+    
+    '''Find versions in script src'''
+    def __extract_script_versions(self):
+        scripts = [script for script in self.res_soup.find_all('script') if script.has_attr('src')]
+        versions = [script['src'] for script in scripts if re.search(r'\?ver=\d+\.\d+', script['src'])]
+        if versions:
+            padding = '\n' + ' ' * 25
+            output = padding.join(v for v in versions)
+            return f'{self.PURPLE}Exposed Versions:{self.WHITE} {output}'
     
     '''Generators from Meta tags'''
     def __extract_generators(self):
@@ -387,6 +397,10 @@ class Scan:
             'Cookies',
             self.__are_cookies_configured(),
             'warn')
+        self.__print_test_result(
+            None,
+            self.__extract_script_versions(),
+            'info')
 
     '''Full Scan'''
     def _scan(self, url):
