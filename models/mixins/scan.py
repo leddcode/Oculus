@@ -102,10 +102,10 @@ class Scan:
     '''Find versions in script src'''
     def __extract_script_versions(self):
         scripts = [script for script in self.res_soup.find_all('script') if script.has_attr('src')]
-        versions = [script['src'] for script in scripts if re.search(r'\?ver=\d+\.\d+', script['src'])]
+        versions = [script['src'].split('/')[-1] for script in scripts if re.search(r'\?ver=\d+\.\d+', script['src'])]
         if versions:
             padding = '\n' + ' ' * 25
-            output = padding.join(v for v in versions)
+            output = padding.join(self.CYAN + v.replace('?ver=', f'{self.WHITE} v') for v in versions)
             return f'{self.PURPLE}Exposed Versions:{self.WHITE} {output}'
     
     '''Generators from Meta tags'''
