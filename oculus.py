@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     try:
         res = requests.get(
-            'https://raw.githubusercontent.com/leddcode/Oculus/main/utils/strings.py')
+            'https://raw.githubusercontent.com/leddcode/Oculus/main/utils/strings.py', timeout=3)
 
         if strings.version not in res.text:
             print(f"{domain.p_info('INFO')} You are running an outdated version.")
