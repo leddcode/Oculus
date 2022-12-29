@@ -102,7 +102,7 @@ class Scan:
     '''Find versions in script src'''
     def __extract_script_versions(self):
         scripts = [script for script in self.res_soup.find_all('script') if script.has_attr('src')]
-        versions = [script['src'].split('/')[-1] for script in scripts if re.search(r'\?ver=\d+\.\d+', script['src'])]
+        versions = ['/'.join(script['src'].split('/')[-3:]) for script in scripts if re.search(r'\?ver=\d+\.\d+', script['src'])]
         if versions:
             padding = '\n' + ' ' * 25
             output = padding.join(self.CYAN + v.replace('?ver=', f'{self.WHITE} v') for v in versions)
