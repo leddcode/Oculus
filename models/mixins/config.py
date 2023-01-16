@@ -18,5 +18,6 @@ class Config:
     DIR_LIST = 'wordlists/dir_wordlist.txt'
     SUB_LIST = 'wordlists/sub_wordlist.txt'
     CLOUD_LIST = 'wordlists/cloud_wordlist.txt'
+    USER_AGENTS_LIST = 'utils/user_agents.txt'
 
     TIMEOUT = 4

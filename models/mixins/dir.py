@@ -27,11 +27,12 @@ class Dir:
                 self.executor = executor
                 words = [''] + wl.read().splitlines()
                 total = self.__get_total(words)
+                print(self.p_info("INFO"), f"Total payloads: {total}\n")
                 for w in words:
                     self.futures.append(self.executor.submit(
                         self._make_request, f'{self.protocol}://{self.name}/{w}', total))
                     self.__search_with_extension(w, total)
 
     def _search_dirs(self):
-        print(f"\n{self.p_cyan('PROC')} Searching for {self.search_type}\n")
+        print(f"\n{self.p_cyan('PROC')} Searching for {self.search_type}")
         self.__create_dir_pool()

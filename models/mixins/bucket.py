@@ -23,7 +23,6 @@ class Bucket:
         return keywords
 
     '''S3 Buckets'''
-
     def __add_s3_permutations(self, word, keyword):
         for char in ('-', '_', '.', ''):
             self.permutations.append(
@@ -42,7 +41,6 @@ class Bucket:
                     self.__add_s3_permutations(w, keyword)
 
     '''Azure Blobs'''
-
     def __add_azure_blobs_permutations(self, word, keyword):
         for char in ('-', '_', '.', ''):
             self.permutations.append(
@@ -86,15 +84,15 @@ class Bucket:
     def __azure_blob_pool(self):
         results = self.executor.map(self.__azure_request, self.permutations)
         total = len(self.permutations)
+        print(self.p_info("INFO"), f"Total payloads: {total}\n")
         for result in results:
             self.count_requests += 1
             if result:
                 print(f'{self.CYAN}       {result[0]}  {result[1]} {" " * 30}{self.WHITE}')
             if self.status_bar in ('y', 'Y', 'yes', 'Yes', 'go', 'sure', 'wtf'):
-                progress = round(self.count_requests / total * 40)
-                bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
+                pr = str(round(self.count_requests * 100 / total, 1)) + '%'
                 self.LOCK.acquire()
-                print(f'       {bar:<40}  ::  {self.count_requests} of {total}', end='\r')
+                print(f'{self.p_warn("SENT")} {pr:<8}R:{self.count_requests}', end='\r')
                 self.LOCK.release()
 
         self.count_requests = 0
@@ -110,7 +108,6 @@ class Bucket:
             print(f"{self.CLEAR}{self.p_plain('~~~~')} No Blobs")
 
     '''Firebase'''
-
     def __add_firebase_permutations(self, word, keyword):
         for char in ('-', '_', '.', ''):
             self.permutations.append(
@@ -129,9 +126,9 @@ class Bucket:
                     self.__add_firebase_permutations(w, keyword)
 
     '''Cloud - Common'''
-
     def __cloud_pool(self):
         total = len(self.permutations)
+        print(self.p_info("INFO"), f"Total payloads: {total}\n")
         for url in self.permutations:
             self.futures.append(self.executor.submit(
                 self._make_request, url, total))

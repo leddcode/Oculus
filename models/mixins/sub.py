@@ -20,12 +20,13 @@ class Sub:
             print(f'{self.CYAN}       No results{self.WHITE}')
 
     def __create_sub_pool(self):
-        print(f"\n{self.p_cyan('PROC')} Brute-Force\n")
+        print(f"\n{self.p_cyan('PROC')} Brute-Force")
         with open(self.SUB_LIST, 'r') as wl:
             with ThreadPoolExecutor(max_workers=self.threads) as executor:
                 self.executor = executor
                 words = wl.read().splitlines()
                 total = len(words)
+                print(self.p_info("INFO"), f"Total payloads: {total}\n")
                 for w in words:
                     sd = f'{w}.{self.name}'
                     if sd not in self.cert_subdomains:
@@ -36,5 +37,8 @@ class Sub:
 
     def _search_subs(self):
         print(f"\n{self.p_cyan('PROC')} Searching for {self.search_type}")
-        self.__crtsh_search()
+        try:
+            self.__crtsh_search()
+        except Exception as e:
+            print(f'{self.CLEAR}{self.p_fail("OOPS")} {e}\n')
         self.__create_sub_pool()

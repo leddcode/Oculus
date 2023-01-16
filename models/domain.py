@@ -113,7 +113,7 @@ class Domain(
             return True
 
     def __get_user_agent(self):
-        user_agents = open('utils/user_agents.txt').read().splitlines()
+        user_agents = open(self.USER_AGENTS_LIST).read().splitlines()
         return random.choice(user_agents)
 
     def __get_headers(self):

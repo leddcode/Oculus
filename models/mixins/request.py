@@ -52,10 +52,9 @@ class Request:
             '''Bad Request'''
 
         if self.status_bar in ('y', 'Y', 'yes', 'Yes', 'go', 'sure', 'wtf'):
-            progress = round(self.count_requests / total * 40)
-            bar = f"{self.YELLOW}{progress * '■'}{self.WHITE}{(40 - progress) * '■'}"
+            pr = str(round(self.count_requests * 100 / total, 1)) + '%'
             self.LOCK.acquire()
-            print(f'       {bar:<40}  ::  {self.count_requests} of {total}', end='\r')
+            print(f'{self.p_warn("SENT")} {pr:<8}R:{self.count_requests}', end='\r')
             self.LOCK.release()
     
     def _check_futures(self):

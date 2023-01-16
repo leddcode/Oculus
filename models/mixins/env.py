@@ -22,10 +22,11 @@ class Env:
     def __create_env_pool(self):
         print(f"\n{self.p_cyan('PROC')} Creating possible urls")
         self.__permutate_env_urls()
-        print(f"{self.p_cyan('PROC')} Searching for {self.search_type}\n")
+        print(f"{self.p_cyan('PROC')} Searching for {self.search_type}")
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
             total = len(self.permutations)
+            print(self.p_info("INFO"), f"Total payloads: {total}\n")
             for url in self.permutations:
                 self.futures.append(
                     self.executor.submit(self._make_request, url, total))
