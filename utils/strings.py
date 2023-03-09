@@ -8,11 +8,12 @@ search_types = f'''{Colour.p_warn(Colour, 'INIT')} Enumeration Options
        4 Mail Server DNS records and Emails Discovery
        5 S3 Buckets                                  
        6 Azure Blob Containers                       
-       7 Firebase Databases                          
-       8 General Information and Misconfigurations   
+       7 Firebase Databases                        
+       8 GCP Buckets                          
+       9 General Information and Misconfigurations   
 '''
 
-version = 'v1.2.33'
+version = 'v1.2.34'
 credit = ''
 
 banner_digital = '''

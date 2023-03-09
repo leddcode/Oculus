@@ -124,6 +124,24 @@ class Bucket:
                     f'https://{keyword}.firebaseio.com/.json')
                 for w in words:
                     self.__add_firebase_permutations(w, keyword)
+    
+    '''GCP Buckets'''
+    def __add_gcp_permutations(self, word, keyword):
+        for char in ('-', '_', '.', ''):
+            self.permutations.append(
+                f'https://storage.googleapis.com/{word}{char}{keyword}')
+            self.permutations.append(
+                f'https://storage.googleapis.com/{keyword}{char}{word}')
+
+    def __permutate_gcp_urls(self):
+        self.permutations = []
+        with open(self.CLOUD_LIST, 'r') as wl:
+            words = wl.read().splitlines()
+            for keyword in self.__get_keywords():
+                self.permutations.append(
+                    f'https://storage.googleapis.com/{keyword}')
+                for w in words:
+                    self.__add_gcp_permutations(w, keyword)
 
     '''Cloud - Common'''
     def __cloud_pool(self):
@@ -140,6 +158,8 @@ class Bucket:
             self.__permutate_azure_blobs_urls()
         elif self.option == 7:
             self.__permutate_firebase_urls()
+        elif self.option == 8:
+            self.__permutate_gcp_urls()
 
     def __create_cloud_pool(self):
         print(f"\n{self.p_cyan('PROC')} Building permutations", end='')
@@ -147,7 +167,7 @@ class Bucket:
         print(f"{self.p_cyan('PROC')} Searching for {self.search_type}")
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
-            if self.option in (5, 7):
+            if self.option in (5, 7, 8):
                 self.__cloud_pool()
             elif self.option == 6:
                 self.__azure_pool()

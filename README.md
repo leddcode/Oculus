@@ -1,7 +1,7 @@
 # Oculus
 
 Oculus is a Domain OSINT Tool used to discover environments, directories, and subdomains of a particular domain.
-Additionally, it is useful for searching S3 Buckets, Azure Blob Containers, Firebase DBs, leaked email addresses and MX records of a domain.
+Additionally, it is useful for searching S3 Buckets, Azure Blob Containers, Firebase DBs, GCP Buckets, leaked email addresses and MX records of a domain.
 
 ![Build](https://img.shields.io/badge/Built%20with-Python-Blue)
 
@@ -39,7 +39,7 @@ python oculus.py
 
 ## Contributing
 
-1. Fork it (<https://github.com/enotr0n/Oculus>)
+1. Fork it (<https://github.com/leddcode/Oculus>)
 2. Create your feature branch (`git checkout -b feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin feature`)

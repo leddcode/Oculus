@@ -7,7 +7,8 @@ class Config:
         5: 'S3 Buckets',
         6: 'Azure Blob Containers',
         7: 'Firebase Databases',
-        8: 'General Information and Misconfigurations'
+        8: 'GCP Buckets',
+        9: 'General Information and Misconfigurations'
     }
 
     TESTS_WITHOUT_THREADS = (4,)

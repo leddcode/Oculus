@@ -66,7 +66,7 @@ class Domain(
             extensions = input('       Extensions       ::  ')
             if extensions:
                 self.extensions = [ext.strip() for ext in extensions.split(",")]
-        elif option in (5, 6, 7):
+        elif option in (5, 6, 7, 8):
             print(f'       {self.YELLOW}Enter additional keywords separated with comma, or leave blank (Ex: word1,word2,word3){self.WHITE}')
             keywords = input('       Keywords         ::  ')
             if keywords:
@@ -180,9 +180,9 @@ class Domain(
                     self._search_subs()
                 elif opt == 4:
                     self._search_emails()
-                elif opt in (5, 6, 7):
+                elif opt in (5, 6, 7, 8):
                     self._cloud_enum()
-                elif opt == 8:
+                elif opt == 9:
                     self._scan(
                         f'{self.protocol}://{self.name}/'
                     )
