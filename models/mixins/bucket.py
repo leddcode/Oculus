@@ -45,10 +45,7 @@ class Bucket:
 
     def __azure_request(self, url):
         try:
-            res = requests.get(
-                url,
-                headers=self.headers,
-                timeout=self.TIMEOUT)
+            res = requests.get(url, headers=self.headers, timeout=self.TIMEOUT)
             if res.status_code:
                 self._write(url, f'{res.status_code}')
                 if res.status_code == 400:

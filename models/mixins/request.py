@@ -2,30 +2,18 @@ from threading import Lock
 from urllib3.exceptions import InsecureRequestWarning
 
 import requests
-from requests.exceptions import SSLError
+
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 
 class Request:
     LOCK = Lock()
 
     def _request(self, url):
-        requests.packages.urllib3.disable_warnings(
-            category=InsecureRequestWarning)
-        try:
-            return requests.get(
-                url,
-                headers=self.headers,
-                timeout=self.TIMEOUT)
-        except SSLError:
-            return requests.get(
-                url,
-                headers=self.headers,
-                timeout=self.TIMEOUT,
-                verify=False)
+        return requests.get(url, headers=self.headers, timeout=self.TIMEOUT, verify=False)
 
     def _make_request(self, url, total=None):
         self.count_requests += 1
-
         try:
             res = self._request(url)
             length = str(len(res.text))
@@ -56,7 +44,7 @@ class Request:
             self.LOCK.acquire()
             print(f'{self.p_warn("SENT")} {pr:<8}R:{self.count_requests}', end='\r')
             self.LOCK.release()
-    
+
     def _check_futures(self):
         for f in self.futures:
             f.result()

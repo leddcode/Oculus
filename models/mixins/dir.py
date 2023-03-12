@@ -14,12 +14,10 @@ class Dir:
         if (w and self.extensions
             and '.' not in w
             and w[0].isalnum()
-            and w[-1].isalnum()):
+                and w[-1].isalnum()):
             for ext in self.extensions:
                 self.futures.append(self.executor.submit(
-                    self._make_request,
-                    f'{self.protocol}://{self.name}/{w}.{ext}', total)
-                )
+                    self._make_request, f'{self.protocol}://{self.name}/{w}.{ext}', total))
 
     def __create_dir_pool(self):
         with open(self.DIR_LIST, 'r', encoding='utf-8', errors='ignore') as wl:

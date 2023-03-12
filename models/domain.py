@@ -59,20 +59,23 @@ class Domain(
         self.name = self.__check_url(url)
         if self.name:
             return self.__set_parts()
-    
+
     def __get_additional_lookup_parameters(self, option):
         if option == 2:
-            print(f'       {self.YELLOW}Enter file extensions separated with comma, or leave blank (Ex: php,aspx){self.WHITE}')
+            print(
+                f'       {self.YELLOW}Enter file extensions separated with comma, or leave blank (Ex: php,aspx){self.WHITE}')
             extensions = input('       Extensions       ::  ')
             if extensions:
-                self.extensions = [ext.strip() for ext in extensions.split(",")]
+                self.extensions = [ext.strip()
+                                   for ext in extensions.split(",")]
         elif option in (5, 6, 7, 8):
-            print(f'       {self.YELLOW}Enter additional keywords separated with comma, or leave blank (Ex: word1,word2,word3){self.WHITE}')
+            print(
+                f'       {self.YELLOW}Enter additional keywords separated with comma, or leave blank (Ex: word1,word2,word3){self.WHITE}')
             keywords = input('       Keywords         ::  ')
             if keywords:
                 self.keywords = [k.strip() for k in keywords.split(",")]
-    
-    def __is_existing_option(self, option:str):
+
+    def __is_existing_option(self, option: str):
         if option.strip().isnumeric() and int(option) in self.OPTIONS.keys():
             return True
 
@@ -82,7 +85,7 @@ class Domain(
         if chosen_options:
             self.chosen_options = chosen_options
         if len(chosen_options) == 1:
-           self.__get_additional_lookup_parameters(chosen_options[0])
+            self.__get_additional_lookup_parameters(chosen_options[0])
         return self.chosen_options
 
     def set_threads(self, threads):
@@ -92,7 +95,8 @@ class Domain(
     def set_excluded_length(self, lengths):
         if lengths:
             try:
-                self.excluded_lengths = [l.strip() for l in lengths.split(',') if l]
+                self.excluded_lengths = [l.strip()
+                                         for l in lengths.split(',') if l]
             except Exception:
                 pass
 
@@ -134,11 +138,8 @@ class Domain(
             if res.status_code not in (400, 404):
                 self.protocol = 'http'
                 self.port = 80
-                print(
-                    f'{self.GREEN}[HTTP]{self.WHITE}')
+                print(f'{self.GREEN}[HTTP]{self.WHITE}')
                 return url
-            else:
-                ''' <- Bad Domain?!'''
         except Exception:
             print(f'{self.RED}[HTTP]{self.WHITE}')
             ''' <- Bad Domain?!'''
@@ -158,8 +159,7 @@ class Domain(
             res = self._request(f'https://{url}')
             if res.status_code not in (400, 404):
                 self.protocol = 'https'
-                print(
-                    f'{self.GREEN}[HTTPS]{self.WHITE}')
+                print(f'{self.GREEN}[HTTPS]{self.WHITE}')
                 return url
             else:
                 print('       Bad Domain?!')
@@ -183,9 +183,7 @@ class Domain(
                 elif opt in (5, 6, 7, 8):
                     self._cloud_enum()
                 elif opt == 9:
-                    self._scan(
-                        f'{self.protocol}://{self.name}/'
-                    )
+                    self._scan(f'{self.protocol}://{self.name}/')
                 while self.futures:
                     done, self.futures = wait(
                         self.futures, return_when=FIRST_COMPLETED)

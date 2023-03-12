@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
         if strings.version not in res.text:
             print(f"{domain.p_info('INFO')} You are running an outdated version.")
-    except Exception:
+    except:
         pass
 
     try:
