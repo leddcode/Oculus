@@ -6,14 +6,22 @@ import requests
 
 class Bucket:
 
+    # Template key is the self.option parameter (the chosen test)
+    TEMPLATE = {
+        5: "https://{}.s3.amazonaws.com",
+        6: "https://{}.blob.core.windows.net",
+        7: "https://{}.firebaseio.com/.json",
+        8: "https://storage.googleapis.com/{}"
+    }
+
     def __init__(self):
         self.azure_targets = []
 
     def __get_keywords(self):
-        keywords = [
-            w for w in self.name.split('.')[:-1] if len(w) > 3
-        ] + self.keywords
-        print(f" with following keywords: {self.GREEN}{', '.join(keywords)}{self.WHITE}")
+        keywords = [w for w in self.name.split(
+            '.')[:-1] if len(w) > 3] + self.keywords
+        print(
+            f" with following keywords: {self.GREEN}{', '.join(keywords)}{self.WHITE}")
         if len(keywords) > 1:
             combs = combinations(keywords, 2)
             for comb in combs:
@@ -22,43 +30,11 @@ class Bucket:
                         [f'{sign}'.join(comb), f'{sign}'.join(reversed(comb))])
         return keywords
 
-    '''S3 Buckets'''
-    def __add_s3_permutations(self, word, keyword):
-        for char in ('-', '_', '.', ''):
-            self.permutations.append(
-                f'https://{word}{char}{keyword}.s3.amazonaws.com/')
-            self.permutations.append(
-                f'https://{keyword}{char}{word}.s3.amazonaws.com/')
-
-    def __permutate_s3_urls(self):
-        self.permutations = []
-        with open(self.CLOUD_LIST, 'r') as wl:
-            words = wl.read().splitlines()
-            for keyword in self.__get_keywords():
-                self.permutations.append(
-                    f'https://{keyword}.s3.amazonaws.com/')
-                for w in words:
-                    self.__add_s3_permutations(w, keyword)
-
-    '''Azure Blobs'''
-    def __add_azure_blobs_permutations(self, word, keyword):
-        for char in ('-', '_', '.', ''):
-            self.permutations.append(
-                f'https://{word}{char}{keyword}.blob.core.windows.net')
-            self.permutations.append(
-                f'https://{keyword}{char}{word}.blob.core.windows.net')
-
-    def __permutate_azure_blobs_urls(self):
-        self.permutations = []
-        with open(self.CLOUD_LIST, 'r') as wl:
-            words = wl.read().splitlines()
-            for keyword in self.__get_keywords():
-                self.permutations.append(
-                    f'https://{keyword}.blob.core.windows.net')
-                for w in words:
-                    self.__add_azure_blobs_permutations(w, keyword)
-
-    def __permutate_blob_containers(self):
+    # Azure Blobs
+    def __permutate_containers(self):
+        """
+        Takes a list of blob URLs and returns a list of possible container URLs.
+        """
         self.permutations = []
         with open(self.CLOUD_LIST, 'r') as wl:
             words = wl.read().splitlines()
@@ -77,8 +53,8 @@ class Bucket:
                 self._write(url, f'{res.status_code}')
                 if res.status_code == 400:
                     self.azure_targets.append(url)
-                return res.status_code, url
-        except Exception:
+                return url
+        except:
             '''Bad Request'''
 
     def __azure_blob_pool(self):
@@ -88,62 +64,40 @@ class Bucket:
         for result in results:
             self.count_requests += 1
             if result:
-                print(f'{self.CYAN}       {result[0]}  {result[1]} {" " * 30}{self.WHITE}')
+                print(f'{self.CYAN}       {result} {" " * 30}{self.WHITE}')
             if self.status_bar in ('y', 'Y', 'yes', 'Yes', 'go', 'sure', 'wtf'):
                 pr = str(round(self.count_requests * 100 / total, 1)) + '%'
                 self.LOCK.acquire()
-                print(f'{self.p_warn("SENT")} {pr:<8}R:{self.count_requests}', end='\r')
+                print(
+                    f'{self.p_warn("SENT")} {pr:<8}R:{self.count_requests}', end='\r')
                 self.LOCK.release()
-
         self.count_requests = 0
 
     def __azure_pool(self):
         print(f"\n{self.p_cyan('PROC')} Blobs Lookup")
-        self.__azure_blob_pool()
+        self.__azure_blob_pool()  # First find blob urls
         if self.azure_targets:
             print(f"{self.CLEAR}\n{self.p_cyan('PROC')} Containers Lookup")
-            self.__permutate_blob_containers()
+            self.__permutate_containers()
             self.__cloud_pool()
         else:
             print(f"{self.CLEAR}{self.p_plain('~~~~')} No Blobs")
 
-    '''Firebase'''
-    def __add_firebase_permutations(self, word, keyword):
+    # Common - cloud
+    def __add_permutations(self, template, word, keyword):
         for char in ('-', '_', '.', ''):
-            self.permutations.append(
-                f'https://{word}{char}{keyword}.firebaseio.com/.json')
-            self.permutations.append(
-                f'https://{keyword}{char}{word}.firebaseio.com/.json')
+            self.permutations.append(template.format(word + char + keyword))
+            self.permutations.append(template.format(keyword + char + word))
 
-    def __permutate_firebase_urls(self):
+    def __permutate_urls(self, template):
         self.permutations = []
         with open(self.CLOUD_LIST, 'r') as wl:
             words = wl.read().splitlines()
             for keyword in self.__get_keywords():
-                self.permutations.append(
-                    f'https://{keyword}.firebaseio.com/.json')
+                self.permutations.append(template.format(keyword))
                 for w in words:
-                    self.__add_firebase_permutations(w, keyword)
-    
-    '''GCP Buckets'''
-    def __add_gcp_permutations(self, word, keyword):
-        for char in ('-', '_', '.', ''):
-            self.permutations.append(
-                f'https://storage.googleapis.com/{word}{char}{keyword}')
-            self.permutations.append(
-                f'https://storage.googleapis.com/{keyword}{char}{word}')
+                    self.__add_permutations(template, w, keyword)
 
-    def __permutate_gcp_urls(self):
-        self.permutations = []
-        with open(self.CLOUD_LIST, 'r') as wl:
-            words = wl.read().splitlines()
-            for keyword in self.__get_keywords():
-                self.permutations.append(
-                    f'https://storage.googleapis.com/{keyword}')
-                for w in words:
-                    self.__add_gcp_permutations(w, keyword)
-
-    '''Cloud - Common'''
     def __cloud_pool(self):
         total = len(self.permutations)
         print(self.p_info("INFO"), f"Total payloads: {total}\n")
@@ -151,19 +105,9 @@ class Bucket:
             self.futures.append(self.executor.submit(
                 self._make_request, url, total))
 
-    def __permutate_cloud_urls(self):
-        if self.option == 5:
-            self.__permutate_s3_urls()
-        elif self.option == 6:
-            self.__permutate_azure_blobs_urls()
-        elif self.option == 7:
-            self.__permutate_firebase_urls()
-        elif self.option == 8:
-            self.__permutate_gcp_urls()
-
     def __create_cloud_pool(self):
         print(f"\n{self.p_cyan('PROC')} Building permutations", end='')
-        self.__permutate_cloud_urls()
+        self.__permutate_urls(self.TEMPLATE[self.option])
         print(f"{self.p_cyan('PROC')} Searching for {self.search_type}")
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             self.executor = executor
