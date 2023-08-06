@@ -10,7 +10,7 @@ class Request:
     LOCK = Lock()
 
     def _request(self, url):
-        return requests.get(url, headers=self.headers, timeout=self.TIMEOUT, verify=False)
+        return requests.get(url, headers=self.headers, timeout=self.TIMEOUT, verify=False, allow_redirects=False)
 
     def _make_request(self, url, total=None):
         self.count_requests += 1

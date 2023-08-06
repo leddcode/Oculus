@@ -40,7 +40,7 @@ class Colour:
             BG_LIGHTGREY = ''
             BG_BLACK = ''
 
-    EXCEPT_CODES = (401, 403, 409)
+    EXCEPT_CODES = (301, 302, 401, 403, 409)
 
     def colour_code(self, code, status):
         if status == 'possible false positive':
