@@ -60,15 +60,15 @@ class Domain(
         if self.name:
             return self.__set_parts()
 
-    def __get_additional_lookup_parameters(self, option):
-        if option == 2:
+    def __get_additional_lookup_parameters(self):
+        if 2 in self.chosen_options:
             print(
                 f'       {self.YELLOW}Enter file extensions separated with comma, or leave blank (Ex: php,aspx){self.WHITE}')
             extensions = input('       Extensions       ::  ')
             if extensions:
                 self.extensions = [ext.strip()
                                    for ext in extensions.split(",")]
-        elif option in (5, 6, 7, 8):
+        if any(opt in (5, 6, 7, 8) for opt in self.chosen_options):
             print(
                 f'       {self.YELLOW}Enter additional keywords separated with comma, or leave blank (Ex: word1,word2,word3){self.WHITE}')
             keywords = input('       Keywords         ::  ')
@@ -84,8 +84,8 @@ class Domain(
             int(o.strip()) for o in options.split(',') if self.__is_existing_option(o)]
         if chosen_options:
             self.chosen_options = chosen_options
-        if len(chosen_options) == 1:
-            self.__get_additional_lookup_parameters(chosen_options[0])
+            
+        self.__get_additional_lookup_parameters()
         return self.chosen_options
 
     def set_threads(self, threads):
