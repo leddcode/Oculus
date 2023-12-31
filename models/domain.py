@@ -52,7 +52,7 @@ class Domain(
         self.cert_subdomains = []
         self.excluded_lengths = []
         self.response_length_list = []
-        self.headers = self.__get_headers()
+        self.headers = {'User-Agent': self.__get_user_agent()}
         super().__init__()
 
     def set_name(self, url):
@@ -120,9 +120,8 @@ class Domain(
         user_agents = open(self.USER_AGENTS_LIST).read().splitlines()
         return random.choice(user_agents)
 
-    def __get_headers(self):
-        ua = self.__get_user_agent()
-        return {'User-Agent': ua}
+    def set_headers(self, h_key, h_value):
+        self.headers[h_key] = h_value
 
     def __apply_threads(self, threads):
         try:

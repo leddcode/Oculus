@@ -25,11 +25,23 @@ if __name__ == '__main__':
         pass
 
     try:
+        while True:
+            print(f"{domain.p_warn('INIT')} Add a request header or leave blank (Ex. Content-Type:application/json)")
+            header = input(f"{domain.p_warn('INIT')} Header  >_ ")
+            if header:
+                try:
+                    k, v = header.split(":", maxsplit=1)
+                    domain.set_headers(k, v)
+                except:
+                    print(f"{domain.p_fail('FAIL')} Bad header!")
+            else:
+                break
+
         while not domain.name:
             url = input(f"{domain.p_warn('INIT')} Target  >_ ")
             if not domain.set_name(url):
                 print(f"{domain.p_fail('FAIL')} Check the domain name and try again (Ex. google.com)")
-
+        
         while not domain.chosen_options:
             print(strings.search_types)
             options = input('       Run              ::  ')
