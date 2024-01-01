@@ -52,7 +52,11 @@ class Domain(
         self.cert_subdomains = []
         self.excluded_lengths = []
         self.response_length_list = []
+        self.cookies = {}
         self.headers = {'User-Agent': self.__get_user_agent()}
+        self.auto_update = {
+            'cookies': True
+        }
         super().__init__()
 
     def set_name(self, url):
@@ -120,8 +124,20 @@ class Domain(
         user_agents = open(self.USER_AGENTS_LIST).read().splitlines()
         return random.choice(user_agents)
 
+    def __set_cookie(self, cookie):
+        try:
+            c_key, c_value = cookie.split("=", maxsplit=1)
+            self.cookies[c_key.strip()] = c_value.strip()
+        except:
+            pass
+
     def set_headers(self, h_key, h_value):
-        self.headers[h_key] = h_value
+        if h_key.lower() == 'cookie':
+            cookies = h_value.split(';')
+            for c in cookies:
+                self.__set_cookie(c)
+        else:
+            self.headers[h_key] = h_value
 
     def __apply_threads(self, threads):
         try:

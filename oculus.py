@@ -25,20 +25,38 @@ if __name__ == '__main__':
         pass
 
     try:
-        while True:
-            print(f"{domain.p_warn('INIT')} Add a request header or leave blank (Ex. Content-Type:application/json)")
-            header = input(f"{domain.p_warn('INIT')} Header  >_ ")
-            if header:
-                try:
-                    k, v = header.split(":", maxsplit=1)
-                    domain.set_headers(k, v)
-                except:
-                    print(f"{domain.p_fail('FAIL')} Bad header!")
-            else:
-                break
+        print(f"{domain.p_info('INFO')} User-Agent set to {domain.GREEN}{domain.headers['User-Agent']}{domain.WHITE}")
+        print(f"{domain.p_info('INFO')} Cookies auto update is {domain.GREEN}ON{domain.WHITE}")
+
+        to_turn_off = input(f"\n{domain.p_warn('INIT')} Turn off cookies auto update? (y/N) >_ ")
+        if to_turn_off and to_turn_off.strip().lower() in ('y', 'yes'):
+            domain.auto_update['cookies'] = False
+            print(f"{domain.p_info('INFO')} Cookies auto update is {domain.RED}OFF{domain.WHITE}\n")
+
+        to_set_headers = input(f"{domain.p_warn('INIT')} Do you want to set headers?   (y/N) >_ ")
+        if to_set_headers and to_set_headers.strip().lower() in ('y', 'yes'):
+            while True:
+                print(f"{domain.p_warn('INIT')} Add a request header or leave blank (Ex. Content-Type:application/json)")
+                header = input(f"{domain.p_warn('INIT')} Header  >_ ")
+                if header:
+                    try:
+                        k, v = header.split(":", maxsplit=1)
+                        domain.set_headers(k.strip(), v.strip())
+                    except:
+                        print(f"{domain.p_fail('FAIL')} Bad header!")
+                else:
+                    break
+
+        print(f"\n{domain.p_info('INFO')} Headers")
+        for k, v in domain.headers.items():
+            print(f"       {domain.GREEN}{k}{domain.WHITE}: {v}")
+        if domain.cookies:
+            print(f"\n{domain.p_info('INFO')} Cookies")
+            for k, v in domain.cookies.items():
+                print(f"       {domain.GREEN}{k}{domain.WHITE}: {v}")
 
         while not domain.name:
-            url = input(f"{domain.p_warn('INIT')} Target  >_ ")
+            url = input(f"\n{domain.p_warn('INIT')} Target  >_ ")
             if not domain.set_name(url):
                 print(f"{domain.p_fail('FAIL')} Check the domain name and try again (Ex. google.com)")
         

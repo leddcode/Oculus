@@ -10,7 +10,14 @@ class Request:
     LOCK = Lock()
 
     def _request(self, url):
-        return requests.get(url, headers=self.headers, timeout=self.TIMEOUT, verify=False, allow_redirects=False)
+        res = requests.get(url, headers=self.headers, cookies=self.cookies, timeout=self.TIMEOUT, verify=False, allow_redirects=False)
+        if self.auto_update['cookies'] and res.cookies:
+            for cookie in res.cookies:
+                self.cookies[cookie.name] = cookie.value
+                # self.LOCK.acquire()
+                # print(f"{self.p_cyan('PROC')} Cookie {self.YELLOW}{cookie.name}{self.WHITE} set with value {self.YELLOW}{cookie.value}{self.WHITE}.")
+                # self.LOCK.release()
+        return res
 
     def _make_request(self, url, total=None):
         self.count_requests += 1
