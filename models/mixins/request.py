@@ -24,7 +24,10 @@ class Request:
         try:
             res = self._request(url)
             length = str(len(res.text))
-            if res.status_code not in self.BAD_CODES and length not in self.excluded_lengths:
+            if not self.to_show_false_positives and length in self.response_length_list and res.status_code not in self.BAD_CODES:
+                # Possible false positive - don't print
+                pass
+            elif res.status_code not in self.BAD_CODES and length not in self.excluded_lengths:
                 status = self.colour_status(res.status_code)
                 if length not in self.response_length_list:
                     self.response_length_list.append(length)
@@ -36,6 +39,7 @@ class Request:
                     return
 
                 self._write(url, f'{res.status_code}{status}')
+
                 self.LOCK.acquire()
                 print(
                     f'{self.CLEAR}       {self.colour_code(res.status_code, status)}C:{res.status_code}   L:{length:<10}  {url}{self.WHITE}'

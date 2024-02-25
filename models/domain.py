@@ -42,6 +42,7 @@ class Domain(
         self.protocol = None
         self.status_bar = None
         self.search_type = None
+        self.to_show_false_positives = True
         self.executor = '1337'
         self.parts = []
         self.futures = []

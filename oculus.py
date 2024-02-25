@@ -33,6 +33,11 @@ if __name__ == '__main__':
             domain.auto_update['cookies'] = False
             print(f"{domain.p_info('INFO')} Cookies auto update is {domain.RED}OFF{domain.WHITE}\n")
 
+        to_show = input(f"{domain.p_warn('INIT')} Show possible false positives? (Y/n) >_ ")
+        if to_show and to_show.strip().lower() in ('n', 'no', 'not'):
+            domain.to_show_false_positives = False
+            print(f"{domain.p_info('INFO')} Printing possible false positives is {domain.RED}OFF{domain.WHITE}\n")
+
         to_set_headers = input(f"{domain.p_warn('INIT')} Do you want to set headers?   (y/N) >_ ")
         if to_set_headers and to_set_headers.strip().lower() in ('y', 'yes'):
             while True:
@@ -78,7 +83,6 @@ if __name__ == '__main__':
 
         print(f'       Request Timeout  ::  {domain.TIMEOUT}')
         print(f'       Protocol         ::  {domain.protocol}')
-        print(f'       User-Agent       ::  {domain.headers["User-Agent"]}')
         domain.search()
 
     except KeyboardInterrupt:

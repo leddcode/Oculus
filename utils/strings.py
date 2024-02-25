@@ -13,7 +13,7 @@ search_types = f'''{Colour.p_warn(Colour, 'INIT')} Enumeration Options
        9 General Information and Misconfigurations   
 '''
 
-version = 'v1.2.40'
+version = 'v1.2.41'
 credit = ''
 
 banner_digital = '''
